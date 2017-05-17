@@ -1,6 +1,6 @@
 package org.rhc.renewals.common;
 
-import org.rhc.renewals.states.RenewalState;
+import org.rhc.renewals.states.ServiceState;
 
 import java.util.Map;
 
@@ -9,20 +9,20 @@ import java.util.Map;
  */
 public class RenewalStateContext {
 
-    private RenewalState currentState;
+    private ServiceState currentState;
 
     private Map<String, String> data;
 
-    public RenewalStateContext(Map<String, String> data, RenewalState currentState) {
+    public RenewalStateContext(Map<String, String> data, ServiceState currentState) {
         this.data = data;
         this.currentState = currentState;
     }
 
-    public RenewalState getCurrentState() {
+    public ServiceState getCurrentState() {
         return currentState;
     }
 
-    public void setCurrentState(RenewalState currentState) {
+    public void setCurrentState(ServiceState currentState) {
         this.currentState = currentState;
     }
 

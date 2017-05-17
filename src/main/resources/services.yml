@@ -1,4 +1,14 @@
 services:
   - name: calculate-price
-    url: http://localhost:8080/hello-microservice
-    timeout: 50
+    url: http://localhost:3000/hello-microservice
+    timeout: 2000
+
+  - name: timeout
+    url: http://localhost:3000/timeout
+    timeout: 2000
+
+  - name: invalid
+    url: http://localhost:3000/invalid
+    timeout: 2000
+
+

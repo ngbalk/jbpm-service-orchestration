@@ -1,16 +1,51 @@
 package org.rhc.renewals.workitems;
 
-import org.drools.core.process.instance.WorkItemHandler;
+import org.jbpm.process.workitem.AbstractLogOrThrowWorkItemHandler;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
+import org.rhc.renewals.common.RenewalStateContext;
+import org.rhc.renewals.common.RequestBuilder;
+import org.rhc.renewals.common.ServiceRequest;
+import org.rhc.renewals.services.ServiceExecutor;
+import org.rhc.renewals.states.ServiceState;
+
+import java.util.Map;
 
 /**
  * Created by nbalkiss on 5/16/17.
  */
-public class InvokeServiceAndWaitWorkItemHandler implements WorkItemHandler {
+public class InvokeServiceAndWaitWorkItemHandler extends AbstractLogOrThrowWorkItemHandler {
 
     @Override
     public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
+
+        logThrownException = false;
+
+        String serviceName = (String) workItem.getParameter("serviceName");
+
+        Map<String,String> data = (Map<String,String>) workItem.getParameter("data");
+
+        ServiceRequest request =
+                RequestBuilder.get()
+                    .addData(data)
+                    .addCallBackUrl("")
+                    .addServiceName(serviceName)
+                    .buildRequest();
+
+        RenewalStateContext stateContext = new RenewalStateContext(data, ServiceState.NOT_STARTED);
+
+        ServiceExecutor executor = new ServiceExecutor(stateContext);
+
+        try{
+            executor.execute(request);
+        }
+        catch(Exception e){
+            handleException(e);
+        }
+
+        workItem.getParameters().put("state", stateContext.getCurrentState());
+
+        manager.completeWorkItem(workItem.getId(), workItem.getParameters());
 
     }
 

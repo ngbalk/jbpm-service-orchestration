@@ -19,6 +19,14 @@ var server = http.createServer(function(req, res) {
             res.end('post received');
         }
 
+        else if (url.parse(req.url).pathname == '/timeout') {
+            setTimeout((function() {
+              res.writeHead(200, {'Content-Type': 'text/plain'});
+              res.end("Hello I am awake");
+            }), 5000);
+        }
+
+
         else {
             res.writeHead(404, {'Content-Type': 'text/plain'});
             res.write("Looked everywhere, but couldn't find that page at all!\n");
@@ -28,4 +36,4 @@ var server = http.createServer(function(req, res) {
 
 });
 
-server.listen(8080);
+server.listen(3000);

@@ -74,7 +74,7 @@ public class WebRequestInvocationBuilder {
         final ResteasyClientBuilder builder = new ResteasyClientBuilder();
 
         if(this.timeout != 0){
-            builder.establishConnectionTimeout(timeout, TimeUnit.MILLISECONDS);
+            builder.socketTimeout(timeout, TimeUnit.MILLISECONDS);
         }
 
         final ResteasyClient client = builder.build();
