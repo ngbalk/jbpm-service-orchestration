@@ -19,11 +19,15 @@ public class SVMService {
 
     public static final int HTTP_STATUS_OK = 200;
 
+    private SVMServiceConfig config;
+
     private ResteasyWebTarget webTarget;
 
     public SVMService(SVMServiceConfig config){
 
-        LOG.debug("Configuring service with configuration: " + config.toString());
+        this.config = config;
+
+        LOG.debug("Configuring service with configuration: {} " , config.toString());
 
         this.webTarget = WebRequestInvocationBuilder.create(config.getUrl())
                 .setTimeout(config.getTimeout())
@@ -31,23 +35,37 @@ public class SVMService {
                 .addUsernameAndPassword(config.getUsername(),config.getPassword()).buildPost();
     }
 
-    public Response execute(ServiceRequest request) throws ServiceRESTException{
+    public Response execute(ServiceRequest request) throws ServiceRESTException, InterruptedException{
 
         LOG.debug("Invoking service call");
 
         Entity entity = Entity.entity(request, MediaType.APPLICATION_JSON);
 
-        Response response = webTarget.request().post(entity);
+        int invokeTimes = this.config.getRetryTimes() + 1;
 
-        if(response.getStatus() != HTTP_STATUS_OK){
+        Response response = null;
 
-            LOG.warn("Service call failed with status code " + response.getStatus());
+        for(int i=0;i<invokeTimes;i++){
 
-            throw new ServiceRESTException(response.getStatusInfo().getReasonPhrase(), response.getStatus());
+            response = webTarget.request().post(entity);
+
+            response.close();
+
+            if(response.getStatus() == HTTP_STATUS_OK){
+
+                LOG.debug("Service call successfully invoked with code: {} ", response.getStatus());
+
+                return response;
+
+            }
+
+            LOG.warn("Service call failed with status code {} \nRetrying {} more times", response.getStatus(), config.getRetryTimes()-i);
+
         }
 
-        LOG.debug("Service call invoked with code: " + response.getStatus());
+        LOG.warn("{} service calls failed with status {} ", config.getUrl(), response.getStatus());
 
-        return response;
+        throw new ServiceRESTException(response.getStatusInfo().getReasonPhrase(), response.getStatus());
+
     }
 }

@@ -15,18 +15,11 @@
         <slf4j.version>1.7.2.redhat-3</slf4j.version>
         <logback.version>1.1.2</logback.version>
         <httpcomponents.version>4.3</httpcomponents.version>
+        <resteasy.version>3.0.16.Final-redhat-1</resteasy.version>
+        <bpm.version>6.5.0.Final-redhat-7</bpm.version>
     </properties>
 
-
     <dependencies>
-
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- Used for slf4j logging in tests -->
         <dependency>
@@ -35,7 +28,6 @@
             <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
-
 
         <!-- test frameworks -->
         <dependency>
@@ -46,11 +38,20 @@
         </dependency>
 
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpcomponents.version}</version>
             <scope>test</scope>
         </dependency>
+
+
 
         <dependency>
             <groupId>commons-io</groupId>
@@ -58,7 +59,6 @@
             <version>2.4.0.redhat-1</version>
             <scope>provided</scope>
         </dependency>
-
 
         <dependency>
             <groupId>commons-codec</groupId>
@@ -75,41 +75,57 @@
         </dependency>
 
         <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+            <version>${bpm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-workitems</artifactId>
+            <version>${bpm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jbpm</groupId>
+            <artifactId>jbpm-executor</artifactId>
+            <version>${bpm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Required -->
+
+        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.0.16.Final-redhat-1</version>
-            <scope>provided</scope>
+            <version>${resteasy.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>3.0.16.Final-redhat-1</version>
-            <scope>provided</scope>
+            <version>${resteasy.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>3.0.16.Final-redhat-1</version>
+            <version>${resteasy.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.15.0.redhat-1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-core</artifactId>
-            <version>6.4.0.Final-redhat-3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jbpm</groupId>
-            <artifactId>jbpm-workitems</artifactId>
-            <version>6.4.0.Final-redhat-3</version>
         </dependency>
 
     </dependencies>

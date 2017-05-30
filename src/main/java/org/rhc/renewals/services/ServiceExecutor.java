@@ -3,6 +3,7 @@ package org.rhc.renewals.services;
 import org.rhc.renewals.common.RenewalStateContext;
 import org.rhc.renewals.common.ServiceRequest;
 import org.rhc.renewals.common.ServiceResponse;
+import org.rhc.renewals.exceptions.ServiceRESTException;
 import org.rhc.renewals.states.ServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +22,11 @@ public class ServiceExecutor {
         this.context = context;
     }
 
-    public void execute(ServiceRequest request) throws Exception {
+    public void execute(ServiceRequest request) throws IllegalStateException, ServiceRESTException, InterruptedException {
 
         if(!context.getCurrentState().equals(ServiceState.NOT_STARTED)){
 
-            LOG.warn("Trying to execute service from an illegal state: " + context.getCurrentState());
+            LOG.warn("Trying to execute service from an illegal state: {} ", context.getCurrentState());
 
             throw new IllegalStateException("Cannot execute service from state: " + context.getCurrentState().value());
         }
@@ -33,7 +34,6 @@ public class ServiceExecutor {
         SVMService service = SVMServiceRegistry.getInstance().getService(request.getSvcName());
 
         service.execute(request);
-
 
         LOG.debug("Set current state to WAITING");
 
@@ -45,7 +45,7 @@ public class ServiceExecutor {
 
         if(!context.getCurrentState().equals(ServiceState.WAITING)){
 
-            LOG.warn("Trying to execute service from an illegal state: " + context.getCurrentState());
+            LOG.warn("Trying to execute service from an illegal state: {} ", context.getCurrentState());
 
             throw new IllegalStateException("Cannot complete service from state: " + context.getCurrentState().value());
         }
@@ -55,7 +55,7 @@ public class ServiceExecutor {
             context.setData(lastServiceResponse.getData());
         }
 
-        LOG.debug("Set current state to " + lastServiceResponse.getSvcState());
+        LOG.debug("Set current state to {} ", lastServiceResponse.getSvcState());
 
         context.setCurrentState(lastServiceResponse.getSvcState());
 

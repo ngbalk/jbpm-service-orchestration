@@ -9,6 +9,8 @@ public class SVMServiceConfig {
     private String password;
     private String token;
     private int timeout;
+    private int retryTimes = 0;
+    private int delay = 0;
 
     public String getUrl() {
         return url;
@@ -50,6 +52,22 @@ public class SVMServiceConfig {
         this.token = token;
     }
 
+    public int getRetryTimes() {
+        return retryTimes;
+    }
+
+    public void setRetryTimes(int retryTimes) {
+        this.retryTimes = retryTimes;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
     @Override
     public String toString() {
         return "SVMServiceConfig{" +
@@ -58,6 +76,8 @@ public class SVMServiceConfig {
                 ", password='" + password + '\'' +
                 ", token='" + token + '\'' +
                 ", timeout=" + timeout +
+                ", retryTimes=" + retryTimes +
+                ", delay=" + delay +
                 '}';
     }
 }

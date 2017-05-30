@@ -6,9 +6,17 @@ services:
   - name: timeout
     url: http://localhost:3000/timeout
     timeout: 2000
+    retry: 3
 
   - name: invalid
     url: http://localhost:3000/invalid
     timeout: 2000
+    retry: 3
+
+  - name: try-again
+    url: http://localhost:3000/try-again
+    timeout: 2000
+    retry: 3
+
 
 

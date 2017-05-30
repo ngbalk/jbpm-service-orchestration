@@ -36,7 +36,7 @@ public class SVMServiceRegistry {
 
             String serviceName = (String) serviceConfigMap.get("name");
 
-            LOG.debug("Loading service configuration for service: " + serviceName);
+            LOG.debug("Loading service configuration for service: {} ", serviceName);
 
             SVMServiceConfig config = new SVMServiceConfig();
             config.setUrl((String) serviceConfigMap.get("url"));
@@ -44,6 +44,12 @@ public class SVMServiceRegistry {
             config.setPassword((String) serviceConfigMap.get("password"));
             if(serviceConfigMap.get("timeout")!=null){
                 config.setTimeout((int) serviceConfigMap.get("timeout"));
+            }
+            if(serviceConfigMap.get("retry")!=null){
+                config.setRetryTimes((int) serviceConfigMap.get("retry"));
+            }
+            if(serviceConfigMap.get("delay")!=null){
+                config.setDelay((int) serviceConfigMap.get("delay"));
             }
 
             services.put(serviceName, new SVMService(config));
@@ -58,6 +64,10 @@ public class SVMServiceRegistry {
 
     public SVMService getService(String serviceName){
         return services.get(serviceName);
+    }
+
+    public void addService(String serviceName, SVMService service) {
+        this.services.put(serviceName, service);
     }
 
 }

@@ -9,6 +9,7 @@ import org.rhc.renewals.common.ServiceRequest;
 import org.rhc.renewals.services.ServiceExecutor;
 import org.rhc.renewals.states.ServiceState;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,6 +25,10 @@ public class InvokeServiceAndWaitWorkItemHandler extends AbstractLogOrThrowWorkI
         String serviceName = (String) workItem.getParameter("serviceName");
 
         Map<String,String> data = (Map<String,String>) workItem.getParameter("data");
+
+        if(data==null){
+            data = new HashMap<>();
+        }
 
         ServiceRequest request =
                 RequestBuilder.get()

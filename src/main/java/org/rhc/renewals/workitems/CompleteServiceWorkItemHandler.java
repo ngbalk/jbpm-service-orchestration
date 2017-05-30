@@ -22,11 +22,11 @@ public class CompleteServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHa
 
         Map<String, Object> parameters = workItem.getParameters();
 
-        ServiceState state = (ServiceState) parameters.get("state");
+        ServiceState state = (ServiceState) workItem.getParameter("state");
 
-        Map<String, String> data = (Map<String,String>) parameters.get("data");
+        Map<String, String> data = (Map<String,String>) workItem.getParameter("data");
 
-        ServiceResponse lastServiceResponse = (ServiceResponse) parameters.get("lastServiceResponse");
+        ServiceResponse lastServiceResponse = (ServiceResponse) workItem.getParameter("lastServiceResponse");
 
         RenewalStateContext context = new RenewalStateContext(data,state);
 
