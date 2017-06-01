@@ -20,7 +20,7 @@ var server = http.createServer(function(req, res) {
             req.on('end', function(){
 
                 var request = JSON.parse(body);
-
+                console.log("Request: " + JSON.stringify(request));
                 var response = {};
 
                 response.Data = request.Data;
@@ -57,7 +57,6 @@ var server = http.createServer(function(req, res) {
                 var response = {};
 
                 response.Data = request.Data;
-                response.Data.pId = "abcdef";
 
                 response.Message = "ERROR"
 
@@ -95,7 +94,7 @@ var server = http.createServer(function(req, res) {
             });
 
             req.on('end', function () {
-                console.log("Body: " + body);
+                console.log("Response: " + body);
             });
         }
 
