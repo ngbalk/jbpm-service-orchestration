@@ -18,5 +18,13 @@ services:
     timeout: 2000
     retry: 3
 
+  - name: generate-renewal-success
+    url: http://localhost:3000/generate-renewal-success
+    timeout: 2000
+
+  - name: generate-renewal-error
+    url: http://localhost:3000/generate-renewal-error
+    timeout: 2000
+
 
 

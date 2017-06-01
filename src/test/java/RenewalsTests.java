@@ -1,26 +1,24 @@
 import org.drools.core.process.instance.WorkItem;
 import org.drools.core.process.instance.WorkItemManager;
-import org.drools.core.process.instance.impl.WorkItemImpl;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.api.executor.CommandContext;
-import org.kie.api.executor.ExecutionResults;
 import org.mockito.Mockito;
-import org.rhc.renewals.commands.InvokeServiceCommand;
 import org.rhc.renewals.common.RenewalStateContext;
 import org.rhc.renewals.common.RequestBuilder;
 import org.rhc.renewals.common.ServiceRequest;
 import org.rhc.renewals.common.ServiceResponse;
-import org.rhc.renewals.exceptions.ServiceRESTException;
+import org.rhc.renewals.errors.ServiceRESTException;
+import org.rhc.renewals.errors.WorkerError;
+import org.rhc.renewals.errors.WorkerException;
 import org.rhc.renewals.services.SVMServiceRegistry;
-import org.rhc.renewals.services.ServiceExecutor;
+import org.rhc.renewals.services.ServiceHandler;
 import org.rhc.renewals.states.*;
 import org.rhc.renewals.workitems.CompleteServiceWorkItemHandler;
 
 import javax.ws.rs.ProcessingException;
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +31,7 @@ public class RenewalsTests {
     @Before
     public void setup(){
         try {
-            ProcessBuilder pb = new ProcessBuilder("node", "src/test/resources/test-microservice.js");
+            ProcessBuilder pb = new ProcessBuilder("node", "src/test/resources/unit-test-server.js");
             pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
             pb.redirectError(ProcessBuilder.Redirect.INHERIT);
             this.exec = pb.start();
@@ -53,7 +51,7 @@ public class RenewalsTests {
 
         RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
-        ServiceExecutor executor = new ServiceExecutor(context);
+        ServiceHandler executor = new ServiceHandler(context);
 
         ServiceRequest request =
                 RequestBuilder.get()
@@ -73,7 +71,7 @@ public class RenewalsTests {
     }
 
     @Test
-    public void testServiceStateTransitionToCompletion(){
+    public void testServiceStateTransitionToCompletion() throws WorkerException {
 
         Map<String,String> data = new HashMap<>();
         data.put("uId","12345");
@@ -82,15 +80,19 @@ public class RenewalsTests {
 
         RenewalStateContext context = new RenewalStateContext(data,currentState);
 
-        Map<String,String> newData = new HashMap<>();
+        HashMap<String, String> newData = new HashMap<>();
         newData.put("uId","12345");
         newData.put("pId","abcdef");
 
+        WorkerCallState workerCallState = new WorkerCallState();
+
+        workerCallState.setCompleted(true);
+
         ServiceResponse response = new ServiceResponse();
-        response.setSvcState(ServiceState.COMPLETED);
+        response.setWorkerCallState(workerCallState);
         response.setData(newData);
 
-        ServiceExecutor executor = new ServiceExecutor(context);
+        ServiceHandler executor = new ServiceHandler(context);
 
         executor.complete(response);
 
@@ -108,20 +110,35 @@ public class RenewalsTests {
 
         RenewalStateContext context = new RenewalStateContext(data,currentState);
 
-        Map<String,String> newData = new HashMap<>();
+        HashMap<String, String> newData = new HashMap<>();
         newData.put("uId","12345");
         newData.put("pId","abcdef");
 
         ServiceResponse response = new ServiceResponse();
-        response.setSvcState(ServiceState.ERROR);
+
+        WorkerCallState workerCallState = new WorkerCallState();
+
+        workerCallState.setCompleted(false);
+
+        WorkerError error = new WorkerError();
+        error.setDescription("Major Error!");
+
+        workerCallState.setErrors(Arrays.asList(error));
+
+        response.setWorkerCallState(workerCallState);
         response.setData(newData);
 
-        ServiceExecutor executor = new ServiceExecutor(context);
+        ServiceHandler executor = new ServiceHandler(context);
 
-        executor.complete(response);
+        try {
+            executor.complete(response);
+            Assert.fail();
+        } catch (WorkerException e) {
+            e.printStackTrace();
+            Assert.assertEquals(ServiceState.ERROR, context.getCurrentState());
+            Assert.assertNull(context.getData().get("pId"));
+        }
 
-        Assert.assertEquals(ServiceState.ERROR, context.getCurrentState());
-        Assert.assertNull(context.getData().get("pId"));
     }
 
 
@@ -130,7 +147,7 @@ public class RenewalsTests {
 
         RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
-        ServiceExecutor executor = new ServiceExecutor(context);
+        ServiceHandler executor = new ServiceHandler(context);
 
         ServiceRequest request =
                 RequestBuilder.get()
@@ -155,7 +172,7 @@ public class RenewalsTests {
 
         RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
-        ServiceExecutor executor = new ServiceExecutor(context);
+        ServiceHandler executor = new ServiceHandler(context);
 
         ServiceRequest request =
                 RequestBuilder.get()
@@ -179,7 +196,7 @@ public class RenewalsTests {
 
         RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
-        ServiceExecutor executor = new ServiceExecutor(context);
+        ServiceHandler executor = new ServiceHandler(context);
 
         ServiceRequest request =
                 RequestBuilder.get()
@@ -205,7 +222,11 @@ public class RenewalsTests {
 
         ServiceResponse responseMock = Mockito.mock(ServiceResponse.class);
 
-        Mockito.when(responseMock.getSvcState()).thenReturn(ServiceState.COMPLETED);
+        WorkerCallState workerCallState = new WorkerCallState();
+
+        workerCallState.setCompleted(true);
+
+        Mockito.when(responseMock.getWorkerCallState()).thenReturn(workerCallState);
 
         Mockito.when(wi.getParameter("data")).thenReturn(Mockito.mock(Map.class));
         Mockito.when(wi.getParameter("state")).thenReturn(ServiceState.WAITING);

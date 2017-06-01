@@ -1,17 +1,20 @@
 package org.rhc.renewals.common;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Created by nbalkiss on 5/16/17.
  */
 public class ServiceRequest extends AbstractServiceRequestResponse{
 
-    private String callBackUrl;
+    @XmlElement(name="CallbackUrl")
+    private String callbackUrl;
 
-    public String getCallBackUrl() {
-        return callBackUrl;
+    public String getCallbackUrl() {
+        return callbackUrl;
     }
 
-    public void setCallBackUrl(String callBackUrl) {
-        this.callBackUrl = callBackUrl;
+    public void setCallbackUrl(String callbackUrl) {
+        this.callbackUrl = callbackUrl;
     }
 }

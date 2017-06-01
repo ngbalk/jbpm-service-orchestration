@@ -1,13 +1,13 @@
 package org.rhc.renewals.common;
 
-import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Created by nbalkiss on 5/16/17.
  */
 public class RequestBuilder {
 
-    private Map<String, String> data;
+    private HashMap<String, String> data;
 
     private String serviceName;
 
@@ -17,7 +17,7 @@ public class RequestBuilder {
         return new RequestBuilder();
     }
 
-    public RequestBuilder addData(Map<String,String> data){
+    public RequestBuilder addData(HashMap<String, String> data){
 
         this.data = data;
 
@@ -44,9 +44,9 @@ public class RequestBuilder {
 
         request.setData(this.data);
 
-        request.setSvcName(this.serviceName);
+        request.setWorkerName(this.serviceName);
 
-        request.setCallBackUrl(this.callBackUrl);
+        request.setCallbackUrl(this.callBackUrl);
 
         return request;
 

@@ -2,7 +2,7 @@ package org.rhc.renewals.services;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.rhc.renewals.common.ServiceRequest;
-import org.rhc.renewals.exceptions.ServiceRESTException;
+import org.rhc.renewals.errors.ServiceRESTException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

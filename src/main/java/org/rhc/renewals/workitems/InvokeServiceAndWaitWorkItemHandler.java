@@ -6,7 +6,7 @@ import org.kie.api.runtime.process.WorkItemManager;
 import org.rhc.renewals.common.RenewalStateContext;
 import org.rhc.renewals.common.RequestBuilder;
 import org.rhc.renewals.common.ServiceRequest;
-import org.rhc.renewals.services.ServiceExecutor;
+import org.rhc.renewals.services.ServiceHandler;
 import org.rhc.renewals.states.ServiceState;
 
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class InvokeServiceAndWaitWorkItemHandler extends AbstractLogOrThrowWorkI
 
         String serviceName = (String) workItem.getParameter("serviceName");
 
-        Map<String,String> data = (Map<String,String>) workItem.getParameter("data");
+        HashMap<String, String> data = (HashMap<String,String>) workItem.getParameter("data");
 
         if(data==null){
             data = new HashMap<>();
@@ -39,10 +39,10 @@ public class InvokeServiceAndWaitWorkItemHandler extends AbstractLogOrThrowWorkI
 
         RenewalStateContext stateContext = new RenewalStateContext(data, ServiceState.NOT_STARTED);
 
-        ServiceExecutor executor = new ServiceExecutor(stateContext);
+        ServiceHandler handler = new ServiceHandler(stateContext);
 
         try{
-            executor.execute(request);
+            handler.execute(request);
         }
         catch(Exception e){
             handleException(e);

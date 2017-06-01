@@ -5,7 +5,7 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.rhc.renewals.common.RenewalStateContext;
 import org.rhc.renewals.common.ServiceResponse;
-import org.rhc.renewals.services.ServiceExecutor;
+import org.rhc.renewals.services.ServiceHandler;
 import org.rhc.renewals.states.ServiceState;
 
 import java.util.Map;
@@ -30,14 +30,14 @@ public class CompleteServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHa
 
         RenewalStateContext context = new RenewalStateContext(data,state);
 
-        ServiceExecutor executor = new ServiceExecutor(context);
+        ServiceHandler handler = new ServiceHandler(context);
 
         try{
-            executor.complete(lastServiceResponse);
+            handler.complete(lastServiceResponse);
             parameters.put("data",context.getData());
             parameters.put("state",context.getCurrentState());
         }
-        catch(IllegalStateException e){
+        catch(Exception e){
             handleException(e);
         }
 

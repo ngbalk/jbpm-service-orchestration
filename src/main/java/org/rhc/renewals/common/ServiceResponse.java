@@ -1,22 +1,30 @@
 package org.rhc.renewals.common;
 
-import org.rhc.renewals.states.ServiceState;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.rhc.renewals.states.WorkerCallState;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 /**
  * Created by nbalkiss on 5/16/17.
  */
+
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ServiceResponse extends AbstractServiceRequestResponse {
 
-    private ServiceState svcState;
-
+    @JsonProperty("Message")
     private String message;
 
-    public ServiceState getSvcState() {
-        return svcState;
+    @JsonProperty("WorkerCallState")
+    private WorkerCallState workerCallState;
+
+    public WorkerCallState getWorkerCallState() {
+        return workerCallState;
     }
 
-    public void setSvcState(ServiceState svcState) {
-        this.svcState = svcState;
+    public void setWorkerCallState(WorkerCallState workerCallState) {
+        this.workerCallState = workerCallState;
     }
 
     public String getMessage() {

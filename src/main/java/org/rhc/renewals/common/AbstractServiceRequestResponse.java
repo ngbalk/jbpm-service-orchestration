@@ -1,29 +1,37 @@
 package org.rhc.renewals.common;
 
-import java.util.Map;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.HashMap;
 
 /**
  * Created by nbalkiss on 5/16/17.
  */
+
 public abstract class AbstractServiceRequestResponse {
 
-    private Map<String, String> data;
+    @XmlElement(name="Data")
+    @JsonProperty("Data")
+    private HashMap<String, String> data;
 
-    private String svcName;
+    @XmlElement(name="WorkerName")
+    @JsonProperty("WorkerName")
+    private String workerName;
 
-    public Map<String, String> getData() {
+    public HashMap<String, String> getData() {
         return data;
     }
 
-    public void setData(Map<String, String> data) {
+    public void setData(HashMap<String, String> data) {
         this.data = data;
     }
 
-    public String getSvcName() {
-        return svcName;
+    public String getWorkerName() {
+        return workerName;
     }
 
-    public void setSvcName(String svcName) {
-        this.svcName = svcName;
+    public void setWorkerName(String workerName) {
+        this.workerName = workerName;
     }
 }

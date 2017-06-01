@@ -1,4 +1,4 @@
-package org.rhc.renewals.exceptions;
+package org.rhc.renewals.errors;
 
 /**
  * Created by nbalkiss on 5/16/17.
