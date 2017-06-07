@@ -14,7 +14,8 @@ import org.rhc.renewals.errors.WorkerError;
 import org.rhc.renewals.errors.WorkerException;
 import org.rhc.renewals.services.SVMServiceRegistry;
 import org.rhc.renewals.services.ServiceHandler;
-import org.rhc.renewals.states.*;
+import org.rhc.renewals.states.ServiceState;
+import org.rhc.renewals.states.WorkerCallState;
 import org.rhc.renewals.workitems.CompleteServiceWorkItemHandler;
 
 import javax.ws.rs.ProcessingException;

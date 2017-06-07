@@ -1,18 +1,28 @@
 package org.rhc.renewals.errors;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonProperty;
+
+import javax.xml.bind.annotation.*;
 
 /**
  * Created by nbalkiss on 5/31/17.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name="WorkerError")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class WorkerError {
 
+    @XmlElement(name="ErrorID")
     @JsonProperty("ErrorID")
     private String errorId;
 
+    @XmlElement(name="Severity")
     @JsonProperty("Severity")
     private Severity severity;
 
+    @XmlElement(name="Description")
     @JsonProperty("Description")
     private String description;
 

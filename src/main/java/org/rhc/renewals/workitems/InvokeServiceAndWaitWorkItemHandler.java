@@ -10,7 +10,6 @@ import org.rhc.renewals.services.ServiceHandler;
 import org.rhc.renewals.states.ServiceState;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by nbalkiss on 5/16/17.

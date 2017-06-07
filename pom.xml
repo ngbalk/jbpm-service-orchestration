@@ -4,7 +4,7 @@
 
     <groupId>org.rhc.renewals</groupId>
     <artifactId>svm-renewals</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <name>svm-renewals</name>
@@ -19,13 +19,24 @@
         <bpm.version>6.5.0.Final-redhat-7</bpm.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.bom.brms</groupId>
+                <artifactId>jboss-brms-bpmsuite-platform-bom</artifactId>
+                <version>6.4.0.GA-redhat-2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
 
         <!-- Used for slf4j logging in tests -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -45,59 +56,39 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${httpcomponents.version}</version>
+            <groupId>org.kie.server</groupId>
+            <artifactId>kie-server-api</artifactId>
+            <version>6.5.0.Final-redhat-2</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.9.redhat-4</version>
-        </dependency>
-
-
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4.0.redhat-1</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.10.0.redhat-5</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.5.4.redhat-1</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-core</artifactId>
-            <version>${bpm.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-workitems</artifactId>
-            <version>${bpm.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jbpm</groupId>
             <artifactId>jbpm-executor</artifactId>
-            <version>${bpm.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -105,27 +96,27 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
-            <scope>compile</scope>
         </dependency>
-
-        <!-- Required -->
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
             <version>${resteasy.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
             <version>${resteasy.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
             <version>${resteasy.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
