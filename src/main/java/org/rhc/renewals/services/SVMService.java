@@ -13,6 +13,9 @@ import javax.ws.rs.core.Response;
 /**
  * Created by nbalkiss on 5/10/17.
  */
+
+// TODO Add ISVMService to interface and use interface
+// TODO Change to  SVMServiceREST to support rest
 public class SVMService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SVMService.class);
