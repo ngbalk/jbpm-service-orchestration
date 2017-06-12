@@ -34,27 +34,37 @@ public class InvokeServiceCommand implements Command{
     private static final Logger LOG = LoggerFactory.getLogger(InvokeServiceCommand.class);
 
     @Override
+    // TODO Method is to big. Split into multiple methods
     public ExecutionResults execute(CommandContext ctx) throws Exception {
 
+        // TODO Move names to constants
         WorkItem workItem = (WorkItem) ctx.getData("workItem");
 
         Long processInstanceId = (Long)ctx.getData("processInstanceId");
 
         String deploymentId = (String) ctx.getData("deploymentId");
 
+        // TODO Add validation logic for parameters
         RuntimeManager runtimeManager = RuntimeManagerRegistry.get().getManager(deploymentId);
 
+        // TODO Check runtime manager
         RuntimeEngine engine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
 
         KieSession ksession = engine.getKieSession();
 
         ProcessInstanceImpl processInstance = (ProcessInstanceImpl) ksession.getProcessInstance(processInstanceId);
 
+        // TODO Check processInstance != null
+
+        // Move to method beginning abd add validation logic
         String serviceName = (String) workItem.getParameter("serviceName");
 
+        // TODO Use interface type
         HashMap<String, String> data = (HashMap<String,String>) workItem.getParameter("data");
 
+        // TODO Use inline if
         if(data==null){
+
             data = new HashMap<>();
         }
 
@@ -80,6 +90,8 @@ public class InvokeServiceCommand implements Command{
             executor.execute(request);
         }
         catch(Exception e){
+
+
 
             LOG.warn("Service call {} failed while executing process ( with id {} )", serviceName, processInstanceId);
 
