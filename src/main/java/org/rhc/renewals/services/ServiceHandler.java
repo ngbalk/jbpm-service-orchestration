@@ -3,6 +3,7 @@ package org.rhc.renewals.services;
 import org.rhc.renewals.common.RenewalStateContext;
 import org.rhc.renewals.common.ServiceRequest;
 import org.rhc.renewals.common.ServiceResponse;
+import org.rhc.renewals.errors.ServiceConfigurationException;
 import org.rhc.renewals.errors.ServiceRESTException;
 import org.rhc.renewals.errors.WorkerException;
 import org.rhc.renewals.states.ServiceState;
@@ -23,7 +24,7 @@ public class ServiceHandler {
         this.context = context;
     }
 
-    public void execute(ServiceRequest request) throws IllegalStateException, ServiceRESTException, InterruptedException {
+    public void execute(ServiceRequest request) throws IllegalStateException, ServiceRESTException, ServiceConfigurationException {
 
         if(!context.getCurrentState().equals(ServiceState.NOT_STARTED)){
 
@@ -32,7 +33,7 @@ public class ServiceHandler {
             throw new IllegalStateException("Cannot execute service from state: " + context.getCurrentState().value());
         }
 
-        SVMService service = SVMServiceRegistry.getInstance().getService(request.getWorkerName());
+        ISVMService service = SVMServiceRegistry.getInstance().getService(request.getWorkerName());
 
         service.execute(request);
 
@@ -67,8 +68,6 @@ public class ServiceHandler {
 
             throw new WorkerException(lastServiceResponse.getWorkerCallState().getErrors());
         }
-
-
 
     }
 
