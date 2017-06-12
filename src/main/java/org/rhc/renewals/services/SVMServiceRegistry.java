@@ -12,6 +12,7 @@ import java.util.Map;
 /**
  * Created by nbalkiss on 5/10/17.
  */
+// TODO Add interface ISVMServiceRegistry
 public class SVMServiceRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(SVMServiceRegistry.class);
@@ -24,6 +25,7 @@ public class SVMServiceRegistry {
 
     private SVMServiceRegistry(){
 
+        // TODO Not concurrent map (to support put operation
         services = new HashMap<>();
 
         InputStream yamlResource = this.getClass().getClassLoader().getResourceAsStream(SERVICES_CONFIG_LOCATION);
@@ -32,6 +34,7 @@ public class SVMServiceRegistry {
 
         Map <String,List <Map <String,Object>>>  servicesConfig = (Map<String,List <Map <String,Object>>>) obj;
 
+        // TODO All harcoded names to constants
         for(Map<String, Object> serviceConfigMap : servicesConfig.get("services")){
 
             String serviceName = (String) serviceConfigMap.get("name");
@@ -40,11 +43,15 @@ public class SVMServiceRegistry {
 
             SVMServiceConfig config = new SVMServiceConfig();
             config.setUrl((String) serviceConfigMap.get("url"));
-            config.setUsername((String) serviceConfigMap.get("username"));
+                config.setUsername((String) serviceConfigMap.get("username"));
             config.setPassword((String) serviceConfigMap.get("password"));
+
+            // TODO Try to use serviceConfigMap.getOrDefault()
             if(serviceConfigMap.get("timeout")!=null){
                 config.setTimeout((int) serviceConfigMap.get("timeout"));
             }
+
+
             if(serviceConfigMap.get("retry")!=null){
                 config.setRetryTimes((int) serviceConfigMap.get("retry"));
             }
@@ -58,14 +65,18 @@ public class SVMServiceRegistry {
 
     }
 
+    // TODO Do we need synchronized ?
     public synchronized static SVMServiceRegistry getInstance(){
         return instance;
     }
 
+    // TODO What happens if service is not found ?
     public SVMService getService(String serviceName){
         return services.get(serviceName);
     }
 
+    // TODO Concurrency - service registry map is not concurrent map
+    // TODO Add the setting to override existing service if service is already registered
     public void addService(String serviceName, SVMService service) {
         this.services.put(serviceName, service);
     }

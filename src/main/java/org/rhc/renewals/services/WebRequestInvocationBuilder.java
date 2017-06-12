@@ -71,6 +71,8 @@ public class WebRequestInvocationBuilder {
      */
     public ResteasyWebTarget buildPost() {
 
+        // TODO Add validation logic
+
         final ResteasyClientBuilder builder = new ResteasyClientBuilder();
 
         if(this.timeout != 0){
