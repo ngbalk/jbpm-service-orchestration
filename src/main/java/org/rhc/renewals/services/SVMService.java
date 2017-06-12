@@ -38,9 +38,17 @@ public class SVMService {
                 .addUsernameAndPassword(config.getUsername(),config.getPassword()).buildPost();
     }
 
+
+
+
+    // TODO Do we have to return response ?
+    // TODO If yes return response entity, not response object: <T> Entity<T>  execute(ServiceRequest request)
     public Response execute(ServiceRequest request) throws ServiceRESTException, InterruptedException{
 
         LOG.debug("Invoking service call");
+
+        // TODO Where is validation logic (like configuration is not set (null)?
+
 
         Entity entity = Entity.entity(request, MediaType.APPLICATION_JSON);
 
@@ -52,6 +60,8 @@ public class SVMService {
 
             response = webTarget.request().post(entity);
 
+            // TODO Close response in the finally block
+            // TODO Close response when all response object operations are completed
             response.close();
 
             if(response.getStatus() == HTTP_STATUS_OK){
@@ -68,7 +78,10 @@ public class SVMService {
 
         LOG.warn("{} service calls failed with status {} ", config.getUrl(), response.getStatus());
 
+
+        // TODO What about not HTPP exceptions ?
         throw new ServiceRESTException(response.getStatusInfo().getReasonPhrase(), response.getStatus());
 
     }
+
 }
