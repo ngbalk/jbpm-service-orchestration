@@ -3,6 +3,9 @@ package org.rhc.renewals.services;
 /**
  * Created by nbalkiss on 5/11/17.
  */
+// TODO Remove default constructor
+// TODO Add fields constructor with protected access
+// TODO Remove setters
 public class SVMServiceConfig {
     private String url;
     private String username;
