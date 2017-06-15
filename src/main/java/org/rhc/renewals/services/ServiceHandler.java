@@ -4,7 +4,7 @@ import org.rhc.renewals.common.RenewalStateContext;
 import org.rhc.renewals.common.ServiceRequest;
 import org.rhc.renewals.common.ServiceResponse;
 import org.rhc.renewals.errors.ServiceConfigurationException;
-import org.rhc.renewals.errors.ServiceRESTException;
+import org.rhc.renewals.errors.ServiceException;
 import org.rhc.renewals.errors.WorkerException;
 import org.rhc.renewals.states.ServiceState;
 import org.slf4j.Logger;
@@ -24,13 +24,18 @@ public class ServiceHandler {
         this.context = context;
     }
 
-    public void execute(ServiceRequest request) throws IllegalStateException, ServiceRESTException, ServiceConfigurationException {
+    public void execute(ServiceRequest request) throws IllegalStateException, ServiceConfigurationException, ServiceException {
 
         if(!context.getCurrentState().equals(ServiceState.NOT_STARTED)){
 
             LOG.warn("Trying to execute service from an illegal state: {} ", context.getCurrentState());
 
             throw new IllegalStateException("Cannot execute service from state: " + context.getCurrentState().value());
+        }
+
+        if(!SVMServiceRegistry.getInstance().isInitialized()){
+
+            throw new IllegalStateException("SVMServiceRegistry has not been properly initialized");
         }
 
         ISVMService service = SVMServiceRegistry.getInstance().getService(request.getWorkerName());

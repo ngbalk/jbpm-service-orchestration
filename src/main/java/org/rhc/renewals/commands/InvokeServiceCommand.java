@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nbalkiss on 5/17/17.
@@ -33,46 +34,65 @@ public class InvokeServiceCommand implements Command{
 
     private static final Logger LOG = LoggerFactory.getLogger(InvokeServiceCommand.class);
 
+    private static final String WORKITEM = "workItem";
+
+    private static final String PROCESS_INSTANCE_ID = "processInstanceId";
+
+    private static final String DEPLOYMENT_ID = "deploymentId";
+
+    private static final String SERVICE_NAME = "serviceName";
+
+    private static final String CALLBACK_SIGNAL_NAME = "callbackSignalName";
+
+    private static final String DATA = "data";
+
+    private static final String BUSINESS_KEY = "businessKey";
+
     @Override
-    // TODO Method is to big. Split into multiple methods
+    // TODO Method is too big. Split into multiple methods
     public ExecutionResults execute(CommandContext ctx) throws Exception {
 
-        // TODO Move names to constants
-        WorkItem workItem = (WorkItem) ctx.getData("workItem");
+        WorkItem workItem = (WorkItem) ctx.getData(WORKITEM);
 
-        Long processInstanceId = (Long)ctx.getData("processInstanceId");
+        Long processInstanceId = (Long)ctx.getData(PROCESS_INSTANCE_ID);
 
-        String deploymentId = (String) ctx.getData("deploymentId");
+        String deploymentId = (String) ctx.getData(DEPLOYMENT_ID);
 
-        // TODO Add validation logic for parameters
+        validateWorkItemParameters(workItem);
+
+        String serviceName = (String) workItem.getParameter(SERVICE_NAME);
+
+        String signalName = (String) workItem.getParameter(CALLBACK_SIGNAL_NAME);
+
+        Map<String, String> data = (HashMap<String,String>) workItem.getParameter(DATA);
+
+        if(data == null) {
+            data = new HashMap<>();
+        }
+
         RuntimeManager runtimeManager = RuntimeManagerRegistry.get().getManager(deploymentId);
 
-        // TODO Check runtime manager
+        if(runtimeManager == null) {
+            throw new Exception("RuntimeManager is null");
+        }
+
         RuntimeEngine engine = runtimeManager.getRuntimeEngine(ProcessInstanceIdContext.get(processInstanceId));
 
-        KieSession ksession = engine.getKieSession();
+        KieSession kieSession = engine.getKieSession();
 
-        ProcessInstanceImpl processInstance = (ProcessInstanceImpl) ksession.getProcessInstance(processInstanceId);
+        ProcessInstanceImpl processInstance = (ProcessInstanceImpl) kieSession.getProcessInstance(processInstanceId);
 
-        // TODO Check processInstance != null
-
-        // Move to method beginning abd add validation logic
-        String serviceName = (String) workItem.getParameter("serviceName");
-
-        // TODO Use interface type
-        HashMap<String, String> data = (HashMap<String,String>) workItem.getParameter("data");
-
-        // TODO Use inline if
-        if(data==null){
-
-            data = new HashMap<>();
+        if(processInstance == null) {
+            throw new Exception("Process Instance with ID " + processInstanceId + " is null");
         }
 
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(data)
-                        .addCallBackUrl("")
                         .addServiceName(serviceName)
+                        .addContainerId(deploymentId)
+                        .addProcessInstanceId(processInstanceId)
+                        .addSignalName(signalName)
                         .buildRequest();
 
         RenewalStateContext stateContext = new RenewalStateContext(data, ServiceState.NOT_STARTED);
@@ -83,7 +103,7 @@ public class InvokeServiceCommand implements Command{
 
             LOG.debug("RESUMING process with id {} in state SUSPENDED", processInstanceId);
 
-            ksession.execute(ProcessStateCommandFactory.getCommand(ResumeProcessInstanceCommand.class, processInstanceId));
+            kieSession.execute(ProcessStateCommandFactory.getCommand(ResumeProcessInstanceCommand.class, processInstanceId));
         }
 
         try{
@@ -91,13 +111,11 @@ public class InvokeServiceCommand implements Command{
         }
         catch(Exception e){
 
-
-
             LOG.warn("Service call {} failed while executing process ( with id {} )", serviceName, processInstanceId);
 
             ExecutorService executorService = ExecutorServiceFactory.newExecutorService();
 
-            List<RequestInfo> requestsByBusinessKey = executorService.getRequestsByBusinessKey((String) ctx.getData("businessKey"), new QueryContext());
+            List<RequestInfo> requestsByBusinessKey = executorService.getRequestsByBusinessKey((String) ctx.getData(BUSINESS_KEY), new QueryContext());
 
             RequestInfo requestInfo = requestsByBusinessKey.get(0);
 
@@ -105,7 +123,7 @@ public class InvokeServiceCommand implements Command{
 
                 LOG.debug("Set process ( with id {} ) state to SUSPENDED", processInstanceId);
 
-                ksession.execute(ProcessStateCommandFactory.getCommand(SuspendProcessInstanceCommand.class, processInstanceId));
+                kieSession.execute(ProcessStateCommandFactory.getCommand(SuspendProcessInstanceCommand.class, processInstanceId));
 
                 throw e;
             }
@@ -113,7 +131,7 @@ public class InvokeServiceCommand implements Command{
 
                 LOG.debug("Set process ( with id {} ) final state to ABORTED", processInstanceId);
 
-                ksession.execute(ProcessStateCommandFactory.getCommand(AbortProcessInstanceCommand.class, processInstanceId));
+                kieSession.execute(ProcessStateCommandFactory.getCommand(AbortProcessInstanceCommand.class, processInstanceId));
 
                 return null;
             }
@@ -124,5 +142,22 @@ public class InvokeServiceCommand implements Command{
         results.setData("state", stateContext.getCurrentState());
 
         return results;
+    }
+
+    private void validateWorkItemParameters(WorkItem workItem) {
+
+        Object serviceName = workItem.getParameter(SERVICE_NAME);
+
+        if(serviceName == null || !(serviceName instanceof String)){
+
+            throw new IllegalArgumentException("Parameter 'serviceName' in AsyncWorkItemHandler is null or is not of type String");
+        }
+
+        Object signalName = workItem.getParameter(CALLBACK_SIGNAL_NAME);
+
+        if(signalName == null || !(signalName instanceof String)){
+
+            throw new IllegalArgumentException("Parameter 'callbackSignalName' in AsyncWorkItemHandler is null or is not of type String");
+        }
     }
 }

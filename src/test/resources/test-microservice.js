@@ -24,6 +24,7 @@ var server = http.createServer(function(req, res) {
                 var response = {};
 
                 response.Data = request.Data;
+                response.SignalInstanceInfo = request.SignalInstanceInfo;
                 response.Data.pId = "abcdef";
 
                 response.Message = "SUCCESS"
@@ -34,7 +35,7 @@ var server = http.createServer(function(req, res) {
                 response.WorkerCallState.Completed = true;
 
 
-                callback(request.CallbackUrl, JSON.stringify(response));
+                callback(request.SignalInstanceInfo.ContainerId,request.SignalInstanceInfo.ProcessInstanceId,request.SignalInstanceInfo.SignalName,JSON.stringify(response));
             });
 
             res.writeHead(200, {'Content-Type': 'text/html'});
@@ -76,15 +77,15 @@ var server = http.createServer(function(req, res) {
 
                 response.WorkerCallState.Errors = Errors;
 
-                callback(request.CallbackUrl, JSON.stringify(response));
+                callback(request.SignalInstanceInfo.ContainerId,request.SignalInstanceInfo.ProcessInstanceId,request.SignalInstanceInfo.SignalName,JSON.stringify(response));
             });
 
             res.writeHead(200, {'Content-Type': 'text/html'});
 
             res.end('post received');
         }
-        else if (url.parse(req.url).pathname == '/callback') {
-            console.log("callback received");
+        else if (url.parse(req.url).pathname.startsWith("/signal")) {
+            console.log("callback received at path " + url.parse(req.url).pathname);
 
             var body = ""
 
@@ -106,12 +107,11 @@ var server = http.createServer(function(req, res) {
 
 });
 
-function callback(myUrl, payload){
-
+function callback(containerId,processInstanceId,signalName,payload){
     var postOptions = {
-      host: url.parse(myUrl).hostname,
-      port: url.parse(myUrl).port,
-      path: url.parse(myUrl).path,
+      host: "localhost",
+      port: "3000",
+      path: "/signal/"+containerId+"/"+processInstanceId+"/"+signalName,
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',

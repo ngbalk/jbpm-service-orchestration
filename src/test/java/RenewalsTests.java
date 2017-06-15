@@ -57,7 +57,9 @@ public class RenewalsTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(new HashMap<>())
-                        .addCallBackUrl("")
+                        .addContainerId("SVMContainer")
+                        .addProcessInstanceId(1L)
+                        .addSignalName("A")
                         .addServiceName("calculate-price")
                         .buildRequest();
 
@@ -153,7 +155,9 @@ public class RenewalsTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(new HashMap<>())
-                        .addCallBackUrl("")
+                        .addContainerId("SVMContainer")
+                        .addProcessInstanceId(1L)
+                        .addSignalName("A")
                         .addServiceName("timeout")
                         .buildRequest();
 
@@ -162,7 +166,7 @@ public class RenewalsTests {
             Assert.fail();
         }
         catch(Exception e){
-            System.out.println(e.getCause().getMessage());
+            System.out.println(e.getMessage());
             Assert.assertTrue(e instanceof ProcessingException);
         }
     }
@@ -178,7 +182,9 @@ public class RenewalsTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(new HashMap<>())
-                        .addCallBackUrl("")
+                        .addContainerId("SVMContainer")
+                        .addProcessInstanceId(1L)
+                        .addSignalName("A")
                         .addServiceName("invalid")
                         .buildRequest();
 
@@ -202,7 +208,9 @@ public class RenewalsTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(new HashMap<>())
-                        .addCallBackUrl("")
+                        .addContainerId("SVMContainer")
+                        .addProcessInstanceId(1L)
+                        .addSignalName("A")
                         .addServiceName("try-again")
                         .buildRequest();
 
@@ -241,8 +249,4 @@ public class RenewalsTests {
 
     }
 
-    @Test
-    public void testSVMServiceRegistryCanLoadServicesConfigAsClasspathResource(){
-        Assert.assertNotNull(SVMServiceRegistry.getInstance());
-    }
 }

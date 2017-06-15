@@ -2,6 +2,7 @@ package org.rhc.renewals.services;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.rhc.renewals.common.ServiceRequest;
+import org.rhc.renewals.config.SVMServiceConfig;
 import org.rhc.renewals.errors.ServiceConfigurationException;
 import org.rhc.renewals.errors.ServiceRESTException;
 import org.slf4j.Logger;
@@ -15,8 +16,6 @@ import javax.ws.rs.core.Response;
  * Created by nbalkiss on 5/10/17.
  */
 
-// TODO Add ISVMService to interface and use interface
-// TODO Change to  SVMServiceREST to support rest
 public class SVMServiceREST implements ISVMService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SVMServiceREST.class);
@@ -45,16 +44,7 @@ public class SVMServiceREST implements ISVMService {
 
     public void execute(ServiceRequest request) throws ServiceConfigurationException, ServiceRESTException{
 
-        if(request.getCallbackUrl() == null){
-
-            throw new ServiceConfigurationException("Callback url for ServiceRequest is null");
-        }
-        if(request.getWorkerName() == null){
-
-            throw new ServiceConfigurationException("WorkerName for ServiceRequest is null");
-        }
-
-        LOG.debug("Invoking service call");
+        validateRequestParameters(request);
 
         Entity entity = Entity.entity(request, MediaType.APPLICATION_JSON);
 
@@ -66,11 +56,15 @@ public class SVMServiceREST implements ISVMService {
 
             try {
 
+                LOG.debug("Invoking service call");
+
                 response = webTarget.request().post(entity);
 
                 if(response == null){
 
-                    throw new ServiceRESTException("Response from request returned null");
+                    LOG.error("Response returned null");
+
+                    throw new ServiceRESTException("Response returned null");
                 }
 
                 if(response.getStatus() == HTTP_STATUS_OK){
@@ -82,14 +76,9 @@ public class SVMServiceREST implements ISVMService {
 
                 LOG.warn("Service call failed with status code {} \nRetrying {} more times", response.getStatus(), config.getRetryTimes()-i);
             }
-            catch (Exception e){
-
-                throw new ServiceRESTException(e.getMessage());
-            }
             finally {
 
-                response.close();
-
+                if(response!=null) response.close();
             }
 
 
@@ -99,6 +88,29 @@ public class SVMServiceREST implements ISVMService {
 
         throw new ServiceRESTException(response.getStatusInfo().getReasonPhrase(), response.getStatus());
 
+    }
+
+    private void validateRequestParameters(ServiceRequest request){
+        if(request.getSignalInstanceInfo() == null){
+
+            throw new ServiceConfigurationException("SignalInstanceInfo is not set");
+        }
+        if(request.getSignalInstanceInfo().getSignalName() == null){
+
+            throw new ServiceConfigurationException("callbackSignalName is not set - Cannot invoke request without callbackSignalName");
+        }
+        if(request.getWorkerName() == null){
+
+            throw new ServiceConfigurationException("WorkerName for ServiceRequest is null");
+        }
+        if(request.getSignalInstanceInfo().getContainerId() == null){
+
+            LOG.warn("ContainerId for callback is null - Are you sure? Worker may not be able to call back without that information");
+        }
+        if(request.getSignalInstanceInfo().getProcessInstanceId() == null){
+
+            LOG.warn("ProcessInstanceId for callback is null - Are you sure? Worker may not be able to call back without that information");
+        }
     }
 
 }

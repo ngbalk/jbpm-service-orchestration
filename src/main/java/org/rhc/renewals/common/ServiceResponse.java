@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="ServiceResponse")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class ServiceResponse extends AbstractServiceRequestResponse{
+public class ServiceResponse extends ServiceRequest {
 
     @XmlElement(name="Message")
     @JsonProperty("Message")

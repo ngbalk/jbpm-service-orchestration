@@ -3,7 +3,6 @@ package org.rhc.renewals.services;
 import org.rhc.renewals.common.ServiceRequest;
 import org.rhc.renewals.errors.ServiceConfigurationException;
 import org.rhc.renewals.errors.ServiceException;
-import org.rhc.renewals.errors.ServiceRESTException;
 
 /**
  * Created by nbalkiss on 6/12/17.

@@ -4,6 +4,7 @@ import org.kie.server.api.marshalling.Marshaller;
 import org.kie.server.api.marshalling.MarshallerFactory;
 import org.kie.server.api.marshalling.MarshallingFormat;
 import org.rhc.renewals.common.ServiceResponse;
+import org.rhc.renewals.common.SignalInstanceInfo;
 import org.rhc.renewals.errors.Severity;
 import org.rhc.renewals.errors.WorkerError;
 import org.rhc.renewals.states.WorkerCallState;
@@ -20,7 +21,7 @@ public class MarshallingTests {
 
     @Test
     public void testUnmarshal(){
-        String data = "{\"org.rhc.renewals.common.ServiceResponse\":{\"Data\":{\"uID\":\"12345\",\"pId\":\"abcdef\"},\"WorkerName\":\"my-worker\",\"Message\":\"FAIL\",\"WorkerCallState\":{\"Completed\":true,\"Errors\":[{\"ErrorID\":null,\"Severity\":\"Critical\",\"Description\":\"this is an error\"}]}}}\n";
+        String data = "{\"org.rhc.renewals.common.ServiceResponse\":{\"Data\":{\"uID\":\"12345\",\"pId\":\"abcdef\"},\"WorkerName\":\"my-worker\",\"SignalInstanceInfo\":{\"ContainerId\":\"123\",\"ProcessInstanceId\":1,\"SignalName\":\"abc\"},\"Message\":\"FAIL\",\"WorkerCallState\":{\"Completed\":true,\"Errors\":[{\"ErrorID\":null,\"Severity\":\"Critical\",\"Description\":\"this is an error\"}]}}}\n";
 
         Set<Class<?>> allClasses = new HashSet<Class<?>>();
         allClasses.add(ServiceResponse.class);
@@ -30,6 +31,8 @@ public class MarshallingTests {
         Assert.assertNotNull(serviceResponse.getMessage());
         Assert.assertNotNull(serviceResponse.getData());
         Assert.assertNotNull(serviceResponse.getWorkerName());
+        Assert.assertNotNull(serviceResponse.getSignalInstanceInfo());
+        Assert.assertNotNull(serviceResponse.getSignalInstanceInfo().getSignalName());
 
     }
 
@@ -38,6 +41,7 @@ public class MarshallingTests {
 
         ServiceResponse response = new ServiceResponse();
         response.setMessage("FAIL");
+        response.setWorkerName("my-worker");
         HashMap<String,String> data = new HashMap<>();
         data.put("uID","12345");
         data.put("pId","abcdef");
@@ -49,6 +53,9 @@ public class MarshallingTests {
         state.setErrors(Arrays.asList(workerError));
         state.setCompleted(true);
         response.setWorkerCallState(state);
+
+        SignalInstanceInfo signalInstanceInfo = new SignalInstanceInfo("123",1L,"abc");
+        response.setSignalInstanceInfo(signalInstanceInfo);
 
         Set<Class<?>> allClasses = new HashSet<Class<?>>();
         allClasses.add(ServiceResponse.class);

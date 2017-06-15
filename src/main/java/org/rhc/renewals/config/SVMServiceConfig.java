@@ -3,26 +3,28 @@ package org.rhc.renewals.config;
 /**
  * Created by nbalkiss on 5/11/17.
  */
-// TODO Remove default constructor
-// TODO Add fields constructor with protected access
-// TODO Remove setters
+
 public class SVMServiceConfig {
+    private String name;
     private String url;
     private String username;
     private String password;
     private String token;
-    private int timeout = 1000;
-    private int retryTimes = 0;
-    private int delay = 0;
+    private int timeout;
+    private int retryTimes;
 
-    public SVMServiceConfig(String url, String username, String password, String token, int timeout, int retryTimes, int delay){
+    protected SVMServiceConfig(String name, String url, String username, String password, String token, int timeout, int retryTimes){
+        this.name=name;
         this.url=url;
         this.username=username;
         this.password=password;
         this.token=token;
         this.timeout=timeout;
         this.retryTimes=retryTimes;
-        this.delay=delay;
+    }
+
+    public String getName(){
+        return name;
     }
 
     public String getUrl() {
@@ -49,20 +51,16 @@ public class SVMServiceConfig {
         return retryTimes;
     }
 
-    public int getDelay() {
-        return delay;
-    }
-
     @Override
     public String toString() {
         return "SVMServiceConfig{" +
-                "url='" + url + '\'' +
+                "name='" + name + '\'' +
+                ", url='" + url + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", token='" + token + '\'' +
                 ", timeout=" + timeout +
                 ", retryTimes=" + retryTimes +
-                ", delay=" + delay +
                 '}';
     }
 }

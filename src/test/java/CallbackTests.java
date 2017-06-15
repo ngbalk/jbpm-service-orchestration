@@ -53,7 +53,9 @@ public class CallbackTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(data)
-                        .addCallBackUrl("http://localhost:3000/callback")
+                        .addContainerId("SVMContainer")
+                        .addProcessInstanceId(1L)
+                        .addSignalName("A")
                         .addServiceName("generate-renewal-success")
                         .buildRequest();
 
@@ -76,7 +78,9 @@ public class CallbackTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(data)
-                        .addCallBackUrl("http://localhost:3000/callback")
+                        .addContainerId("SVMContainer")
+                        .addProcessInstanceId(1L)
+                        .addSignalName("A")
                         .addServiceName("generate-renewal-error")
                         .buildRequest();
 
