@@ -1,85 +1,140 @@
 package org.rhc.renewals.services;
 
+import org.rhc.renewals.config.SVMServiceConfig;
+import org.rhc.renewals.config.ServiceConfigParser;
 import org.rhc.renewals.errors.ServiceConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
-import java.util.HashMap;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by nbalkiss on 5/10/17.
  */
 public class SVMServiceRegistry implements ISVMServiceRegistry{
 
-    private boolean initialized = false;
-
     private static final Logger LOG = LoggerFactory.getLogger(SVMServiceRegistry.class);
 
     private static SVMServiceRegistry instance = new SVMServiceRegistry();
 
+    private boolean initialized = false;
+
     private Map<String, ISVMService> services;
 
-    private static final String SERVICES_CONFIG_LOCATION = "services.yml";
+    protected static final String DEFAULT_SERVICES_CONFIG_VALUE = "classpath:/org.rhc.renewals.service.config.yml";
+
+    protected static final String SERVICES_CONFIG_PROP_NAME = "org.rhc.renewals.service.config.location";
 
     private SVMServiceRegistry() {
 
-        services = new HashMap<>();
+        services = new ConcurrentHashMap<>();
 
-        InputStream yamlResource = this.getClass().getClassLoader().getResourceAsStream(SERVICES_CONFIG_LOCATION);
+        final String propertiesLocation = System.getProperty(SERVICES_CONFIG_PROP_NAME);
 
-        Object obj = new Yaml().load(yamlResource);
+        List<SVMServiceConfig> configs = readServicesConfig(propertiesLocation, DEFAULT_SERVICES_CONFIG_VALUE);
 
-        Map <String,List <Map <String,Object>>>  servicesConfig = (Map<String,List <Map <String,Object>>>) obj;
+        if(configs != null){
 
-        for(Map<String, Object> serviceConfigMap : servicesConfig.get("services")){
+            for(SVMServiceConfig config : configs){
 
-            String serviceName = (String) serviceConfigMap.get("name");
-
-            LOG.debug("Loading service configuration for service: {} ", serviceName);
-
-            SVMServiceConfig config = new SVMServiceConfig();
-
-            config.setUrl((String) serviceConfigMap.get("url"));
-
-            config.setUsername((String) serviceConfigMap.get("username"));
-
-            config.setPassword((String) serviceConfigMap.get("password"));
-
-            if(serviceConfigMap.get("timeout")!=null){
-
-                config.setTimeout((int) serviceConfigMap.get("timeout"));
-            }
-            if(serviceConfigMap.get("retry")!=null){
-
-                config.setRetryTimes((int) serviceConfigMap.get("retry"));
-            }
-            if(serviceConfigMap.get("delay")!=null){
-
-                config.setDelay((int) serviceConfigMap.get("delay"));
+                services.put(config.getName(), new SVMServiceREST(config));
             }
 
-            services.put(serviceName, new SVMServiceREST(config));
+            initialized = true;
 
+            LOG.debug("SVMServiceRegistry initialized status = {}",initialized);
         }
+        else{
 
-        initialized = true;
-
+            LOG.error("Service configurations were not able to be loaded, this could cause problems. SVMServiceRegistry initialized status = {}", initialized);
+        }
     }
 
-    public synchronized static SVMServiceRegistry getInstance(){
+    public boolean isInitialized(){
+        return initialized;
+    }
+
+    public static SVMServiceRegistry getInstance(){
         return instance;
     }
 
+    @Override
     public ISVMService getService(String serviceName){
+
+        if(!services.containsKey(serviceName)){
+
+            throw new ServiceConfigurationException("Service with name " + serviceName + " not found.");
+        }
         return services.get(serviceName);
     }
 
-    public void addService(String serviceName, SVMServiceREST service) {
-        this.services.put(serviceName, service);
+    @Override
+    public void addService(SVMServiceConfig serviceConfig, boolean overwrite) {
+
+        this.services.put(serviceConfig.getName(), new SVMServiceREST(serviceConfig));
+    }
+
+    protected List<SVMServiceConfig> readServicesConfig(String configLocation, String defaultProperties) {
+
+        URL locationUrl = null;
+
+        if (configLocation == null) {
+
+            configLocation = defaultProperties;
+        }
+
+        LOG.debug("Service configuration will be loaded from {}", configLocation);
+
+        if (configLocation.startsWith("classpath:")) {
+
+            String strippedLocation = configLocation.replaceFirst("classpath:", "");
+
+            locationUrl = this.getClass().getResource(strippedLocation);
+
+            if (locationUrl == null) {
+
+                locationUrl = Thread.currentThread().getContextClassLoader().getResource(strippedLocation);
+            }
+        }
+        else {
+
+            try {
+
+                locationUrl = new URL(configLocation);
+            }
+            catch (MalformedURLException e) {
+
+                locationUrl = this.getClass().getResource(configLocation);
+
+                if (locationUrl == null) {
+
+                    locationUrl = Thread.currentThread().getContextClassLoader().getResource(configLocation);
+                }
+            }
+        }
+
+        List<SVMServiceConfig> configs = null;
+
+        if (locationUrl != null) {
+            try {
+
+                configs = ServiceConfigParser.parseYAMLConfig(locationUrl.openStream());
+            }
+            catch (Exception e) {
+
+                LOG.error("Error when loading services configuration ", e);
+            }
+        }
+        else{
+
+            LOG.error("Failed to load configuration from location {}  Make sure that this location exists",configLocation);
+        }
+
+        return configs;
     }
 
 }

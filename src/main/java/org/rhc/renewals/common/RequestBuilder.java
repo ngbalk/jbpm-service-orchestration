@@ -7,6 +7,7 @@ import java.util.HashMap;
  */
 public class RequestBuilder {
 
+    // TODO Chenge to interface type
     private HashMap<String, String> data;
 
     private String serviceName;
