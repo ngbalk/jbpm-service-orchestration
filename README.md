@@ -63,6 +63,32 @@ If you want to be able to access your fancy new WIH from the process editor with
 ```
 The "name" should correspond to what you registered in the Deployment Descriptor
 #### 5) Configure your services in configuration file
+Services are configured in a configuration file.  You can write a custom parser depending on how you want to load your configuration file.
+By default, we are using YAML to configure our services, and have written a custom parser to parse this file.
+
+Our YAML configuration file is in the following format:
+```
+services:
+  - name: serviceA
+    url: http://some/url/to/service/A
+    timeout: someNumber(millis)
+    retries: someInt(i.e. 3)
+    username:
+    password:
+    token: (i.e. JWT token)
+
+  - name: serviceB
+    url: http://localhost:3000/serviceB
+    timeout: 3000
+    retries: 3
+    username: johndoe
+    password: unicorns1!
+```
+By default, SVMServiceRegistry will look for a file named "org.rhc.renewals.service.config.yml" on the classpath.
+You can configure SVMServiceRegistry to look anywhere by setting the property: org.rhc.renewals.service.config.location
+```sh
+$ bash standalone.sh -Dorg.rhc.renewals.service.config.location=file:///Users/johndoe/files/services_config.yml
+```
 #### 6) Add your AsyncWorkItemHandler to your workflow
 
 Data Inputs And Assignments
