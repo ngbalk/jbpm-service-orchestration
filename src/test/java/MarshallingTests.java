@@ -3,11 +3,11 @@ import org.junit.Test;
 import org.kie.server.api.marshalling.Marshaller;
 import org.kie.server.api.marshalling.MarshallerFactory;
 import org.kie.server.api.marshalling.MarshallingFormat;
-import org.rhc.renewals.common.ServiceResponse;
-import org.rhc.renewals.common.SignalInstanceInfo;
-import org.rhc.renewals.errors.Severity;
-import org.rhc.renewals.errors.WorkerError;
-import org.rhc.renewals.states.WorkerCallState;
+import org.rhc.workflow.common.ServiceResponse;
+import org.rhc.workflow.common.SignalInstanceInfo;
+import org.rhc.workflow.errors.Severity;
+import org.rhc.workflow.errors.WorkerError;
+import org.rhc.workflow.states.WorkerCallState;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class MarshallingTests {
 
     @Test
     public void testUnmarshal(){
-        String data = "{\"org.rhc.renewals.common.ServiceResponse\":{\"Data\":{\"uID\":\"12345\",\"pId\":\"abcdef\"},\"WorkerName\":\"my-worker\",\"SignalInstanceInfo\":{\"ContainerId\":\"123\",\"ProcessInstanceId\":1,\"SignalName\":\"abc\"},\"Message\":\"FAIL\",\"WorkerCallState\":{\"Completed\":true,\"Errors\":[{\"ErrorID\":null,\"Severity\":\"Critical\",\"Description\":\"this is an error\"}]}}}\n";
+        String data = "{\"org.rhc.workflow.common.ServiceResponse\":{\"Data\":{\"uID\":\"12345\",\"pId\":\"abcdef\"},\"WorkerName\":\"my-worker\",\"SignalInstanceInfo\":{\"ContainerId\":\"123\",\"ProcessInstanceId\":1,\"SignalName\":\"abc\"},\"Message\":\"FAIL\",\"WorkerCallState\":{\"Completed\":true,\"Errors\":[{\"ErrorID\":null,\"Severity\":\"Critical\",\"Description\":\"this is an error\"}]}}}\n";
 
         Set<Class<?>> allClasses = new HashSet<Class<?>>();
         allClasses.add(ServiceResponse.class);

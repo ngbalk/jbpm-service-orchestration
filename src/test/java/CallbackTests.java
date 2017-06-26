@@ -2,11 +2,11 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.rhc.renewals.common.RenewalStateContext;
-import org.rhc.renewals.common.RequestBuilder;
-import org.rhc.renewals.common.ServiceRequest;
-import org.rhc.renewals.services.ServiceHandler;
-import org.rhc.renewals.states.ServiceState;
+import org.rhc.workflow.common.StateContext;
+import org.rhc.workflow.common.RequestBuilder;
+import org.rhc.workflow.common.ServiceRequest;
+import org.rhc.workflow.services.ServiceHandler;
+import org.rhc.workflow.states.ServiceState;
 
 import java.util.HashMap;
 
@@ -43,7 +43,7 @@ public class CallbackTests {
     @Test
     public void testCallToServiceWithCallback() throws Exception{
 
-        RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
@@ -68,7 +68,7 @@ public class CallbackTests {
     @Test
     public void testCallToServiceWithCallbackError() throws Exception{
 
-        RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 

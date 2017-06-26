@@ -15,8 +15,8 @@ $ mvn clean install
 From Business Central, navigation to "Dependencies: Dependencies List" and add the group, artifact, version of this artifact as a dependency.  Or, add directly to the pom.xml.
 ```
 <dependency>
-  <groupId>org.rhc.renewals</groupId>
-  <artifactId>svm-renewals</artifactId>
+  <groupId>org.rhc.workflow</groupId>
+  <artifactId>bpm-services</artifactId>
   <version>1.0.2</version>
 </dependency>
 ```
@@ -29,14 +29,14 @@ Navigate to "Deployment Descriptor Editor" and add the following entry under "Wo
 |     Value      |  Value   |
 | ------------- |:-------------|
 AsyncService    |   new org.jbpm.executor.impl.wih.AsyncWorkItemHandler(org.jbpm.executor.ExecutorServiceFactory.newExecutorService())|
-CompleteService |   new org.rhc.renewals.workitems.CompleteServiceWorkItemHandler()                                                   |
+CompleteService |   new org.rhc.workflow.workitems.CompleteServiceWorkItemHandler()                                                   |
 
 
 Or add directly to kie-deployment-descriptor.xml
 ```
 <work-item-handler>
     <resolver>mvel</resolver>
-    <identifier>new org.rhc.renewals.workitems.CompleteServiceWorkItemHandler()</identifier>
+    <identifier>new org.rhc.workflow.workitems.CompleteServiceWorkItemHandler()</identifier>
     <parameters/>
     <name>CompleteService</name>
 </work-item-handler>
@@ -84,10 +84,10 @@ services:
     username: johndoe
     password: unicorns1!
 ```
-By default, SVMServiceRegistry will look for a file named "org.rhc.renewals.service.config.yml" on the classpath.
-You can configure SVMServiceRegistry to look anywhere by setting the property: org.rhc.renewals.service.config.location
+By default, SVMServiceRegistry will look for a file named "org.rhc.workflow.service.config.yml" on the classpath.
+You can configure SVMServiceRegistry to look anywhere by setting the property: org.rhc.workflow.service.config.location
 ```sh
-$ bash standalone.sh -Dorg.rhc.renewals.service.config.location=file:///Users/johndoe/files/services_config.yml
+$ bash standalone.sh -Dorg.rhc.workflow.service.config.location=file:///Users/johndoe/files/services_config.yml
 ```
 #### 6) Add your AsyncWorkItemHandler to your workflow
 
@@ -95,7 +95,7 @@ Data Inputs And Assignments
 
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
-| CommandClass  |   String      | org.rhc.renewals.commands.InvokeServiceCommand |
+| CommandClass  |   String      | org.rhc.workflow.commands.InvokeServiceCommand |
 | Retries       |   Integer     | 3 |
 | RetryDelay    |   String      | 5s, 10s, 15s |
 | Priority      |   Integer     |   0
@@ -105,7 +105,7 @@ Data Outputs And Assignments
 
 | Name          | Data Type     | Target|
 | ------------- |:-------------:| -----:|
-| state  |   org.rhc.renewals.states.ServiceState      | state |
+| state  |   org.rhc.workflow.states.ServiceState      | state |
 
 #### 7) Add your signal
 Your signal should follow after the AsyncWorkItemHandler with the following config:
@@ -114,7 +114,7 @@ Data Outputs And Assignments
 
 | Name          | Data Type     | Target|
 | ------------- |:-------------:| -----:|
-| lastServiceResponse  |   org.rhc.renewals.common.ServiceResponse      | lastServiceResponse |
+| lastServiceResponse  |   org.rhc.workflow.common.ServiceResponse      | lastServiceResponse |
 
 #### 8) Add your CompleteServiceWorkItemHandler
 This WorkItemHandler takes the response from Signal and applies the result to the state of the process, or handles failures
@@ -123,14 +123,14 @@ Data Inputs And Assignments
 
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
-| lastServiceResponse  |   org.rhc.renewals.common.ServiceResponse      | lastServiceResponse |
+| lastServiceResponse  |   org.rhc.workflow.common.ServiceResponse      | lastServiceResponse |
 | data | java.util.Map | data
-| state| org.rhc.renewals.states.ServiceState | state
+| state| org.rhc.workflow.states.ServiceState | state
 
 Data Outputs And Assignments
 
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
 | data | java.util.Map | data
-| state| org.rhc.renewals.states.ServiceState | state
+| state| org.rhc.workflow.states.ServiceState | state
 

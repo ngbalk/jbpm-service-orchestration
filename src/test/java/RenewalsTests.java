@@ -5,18 +5,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.rhc.renewals.common.RenewalStateContext;
-import org.rhc.renewals.common.RequestBuilder;
-import org.rhc.renewals.common.ServiceRequest;
-import org.rhc.renewals.common.ServiceResponse;
-import org.rhc.renewals.errors.ServiceRESTException;
-import org.rhc.renewals.errors.WorkerError;
-import org.rhc.renewals.errors.WorkerException;
-import org.rhc.renewals.services.SVMServiceRegistry;
-import org.rhc.renewals.services.ServiceHandler;
-import org.rhc.renewals.states.ServiceState;
-import org.rhc.renewals.states.WorkerCallState;
-import org.rhc.renewals.workitems.CompleteServiceWorkItemHandler;
+import org.rhc.workflow.common.StateContext;
+import org.rhc.workflow.common.RequestBuilder;
+import org.rhc.workflow.common.ServiceRequest;
+import org.rhc.workflow.common.ServiceResponse;
+import org.rhc.workflow.errors.ServiceRESTException;
+import org.rhc.workflow.errors.WorkerError;
+import org.rhc.workflow.errors.WorkerException;
+import org.rhc.workflow.services.ServiceHandler;
+import org.rhc.workflow.states.ServiceState;
+import org.rhc.workflow.states.WorkerCallState;
+import org.rhc.workflow.workitems.CompleteServiceWorkItemHandler;
 
 import javax.ws.rs.ProcessingException;
 import java.util.Arrays;
@@ -50,7 +49,7 @@ public class RenewalsTests {
     @Test
     public void testServiceStateTransitionToWaiting(){
 
-        RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
@@ -81,7 +80,7 @@ public class RenewalsTests {
 
         ServiceState currentState = ServiceState.WAITING;
 
-        RenewalStateContext context = new RenewalStateContext(data,currentState);
+        StateContext context = new StateContext(data,currentState);
 
         HashMap<String, String> newData = new HashMap<>();
         newData.put("uId","12345");
@@ -111,7 +110,7 @@ public class RenewalsTests {
 
         ServiceState currentState = ServiceState.WAITING;
 
-        RenewalStateContext context = new RenewalStateContext(data,currentState);
+        StateContext context = new StateContext(data,currentState);
 
         HashMap<String, String> newData = new HashMap<>();
         newData.put("uId","12345");
@@ -148,7 +147,7 @@ public class RenewalsTests {
     @Test
     public void testTimeoutWorks(){
 
-        RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
@@ -175,7 +174,7 @@ public class RenewalsTests {
     @Test
     public void test404Exception(){
 
-        RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
@@ -201,7 +200,7 @@ public class RenewalsTests {
     @Test
     public void testServiceSuccessfullyRetries(){
 
-        RenewalStateContext context = new RenewalStateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 

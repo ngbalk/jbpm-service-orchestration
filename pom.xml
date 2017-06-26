@@ -2,12 +2,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.rhc.renewals</groupId>
-    <artifactId>svm-renewals</artifactId>
+    <groupId>org.rhc.workflow</groupId>
+    <artifactId>bpm-services</artifactId>
     <version>1.0.2</version>
     <packaging>jar</packaging>
 
-    <name>svm-renewals</name>
+    <name>bpm-services</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
