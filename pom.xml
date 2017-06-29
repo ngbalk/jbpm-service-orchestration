@@ -127,6 +127,14 @@
 
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>nexus-workflow</id>
+            <name>ServiceMaster Corporate Nexus</name>
+            <url>https://nexus.servicemaster.com/nexus/content/repositories/workflow/</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>redhat-techpreview</id>

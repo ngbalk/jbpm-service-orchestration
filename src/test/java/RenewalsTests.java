@@ -9,6 +9,7 @@ import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.common.RequestBuilder;
 import org.rhc.workflow.common.ServiceRequest;
 import org.rhc.workflow.common.ServiceResponse;
+import org.rhc.workflow.errors.ServiceException;
 import org.rhc.workflow.errors.ServiceRESTException;
 import org.rhc.workflow.errors.WorkerError;
 import org.rhc.workflow.errors.WorkerException;
@@ -35,7 +36,7 @@ public class RenewalsTests {
             pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
             pb.redirectError(ProcessBuilder.Redirect.INHERIT);
             this.exec = pb.start();
-            Thread.sleep(100);
+            Thread.sleep(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -246,6 +247,62 @@ public class RenewalsTests {
 
         wih.executeWorkItem(wi,wim);
 
+    }
+
+    @Test
+    public void testTESTFlagModeWithValidServiceSucceeds() throws Exception{
+
+        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+
+        ServiceHandler executor = new ServiceHandler(context);
+
+        HashMap<String,String> data = new HashMap<>();
+        data.put("uID","12345");
+
+        ServiceRequest request =
+                RequestBuilder.get()
+                        .addData(data)
+                        .addContainerId("SVMContainer")
+                        .addProcessInstanceId(1L)
+                        .addSignalName("A")
+                        .addServiceName("$TEST:http://localhost:3000/hello-microservice")
+                        .buildRequest();
+
+
+        executor.execute(request);
+
+        Assert.assertEquals(ServiceState.WAITING, context.getCurrentState());
+
+    }
+
+    @Test
+    public void testTESTFlagModeWithInValidServiceFails(){
+
+        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+
+        ServiceHandler executor = new ServiceHandler(context);
+
+        HashMap<String,String> data = new HashMap<>();
+        data.put("uID","12345");
+
+        ServiceRequest request =
+                RequestBuilder.get()
+                        .addData(data)
+                        .addContainerId("SVMContainer")
+                        .addProcessInstanceId(1L)
+                        .addSignalName("A")
+                        .addServiceName("$TEST:http://localhost:3000/invalid-service")
+                        .buildRequest();
+
+
+        try {
+            executor.execute(request);
+
+            Assert.fail();
+        } catch (ServiceException e) {
+
+            e.printStackTrace();
+        }
     }
 
 }

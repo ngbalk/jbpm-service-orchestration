@@ -3,6 +3,7 @@ package org.rhc.workflow.services;
 import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.common.ServiceRequest;
 import org.rhc.workflow.common.ServiceResponse;
+import org.rhc.workflow.config.SVMServiceConfig;
 import org.rhc.workflow.errors.ServiceConfigurationException;
 import org.rhc.workflow.errors.ServiceException;
 import org.rhc.workflow.errors.WorkerException;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 public class ServiceHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServiceHandler.class);
+
+    private static final String TEST_FLAG = "$TEST:";
 
     private StateContext context;
 
@@ -38,7 +41,20 @@ public class ServiceHandler {
             throw new IllegalStateException("SVMServiceRegistry has not been properly initialized");
         }
 
-        ISVMService service = SVMServiceRegistry.getInstance().getService(request.getWorkerName());
+        ISVMService service;
+
+        if(request.getWorkerName().startsWith(TEST_FLAG)){
+
+            LOG.warn("Calling service in TEST mode, calling to {}",request.getWorkerName());
+
+            SVMServiceConfig config = new SVMServiceConfig("test-worker", request.getWorkerName().substring(TEST_FLAG.length()), null, null, null, 10000, 0);
+
+            service = new SVMServiceREST(config);
+        }
+        else{
+
+            service = SVMServiceRegistry.getInstance().getService(request.getWorkerName());
+        }
 
         service.execute(request);
 

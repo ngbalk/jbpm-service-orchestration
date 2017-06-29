@@ -13,7 +13,7 @@ public class SVMServiceConfig {
     private int timeout;
     private int retryTimes;
 
-    protected SVMServiceConfig(String name, String url, String username, String password, String token, int timeout, int retryTimes){
+    public SVMServiceConfig(String name, String url, String username, String password, String token, int timeout, int retryTimes){
         this.name=name;
         this.url=url;
         this.username=username;
