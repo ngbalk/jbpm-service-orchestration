@@ -134,3 +134,28 @@ Data Outputs And Assignments
 | data | java.util.Map | data
 | state| org.rhc.workflow.states.ServiceState | state
 
+
+#### 9) Enabling JPA Persistence for Query-able Data
+By default, JBPM uses binary serialization for storing Process Variable data.  We want to use JPA to store these as Persistent Entities instead.
+We will make changes to the following files to enable this at the project level:
+
+* persistence.xml
+* kie-deployment-descriptor.xml
+
+1) Add your serializable classes to persistence.xml.  In this case we are using MappedVariable to correlate a variable to a process instance id, so we have to include a few more classes.  (notice how DataWrapper extends VariableEntity)
+```
+<class>org.drools.persistence.jpa.marshaller.MappedVariable</class>
+<class>org.drools.persistence.jpa.marshaller.VariableEntity</class>
+<class>org.rhc.workflow.models.DataWrapper</class>
+```
+
+2) Add the following to persistence.xml
+```
+<marshalling-strategies>
+    <marshalling-strategy>
+        <resolver>mvel</resolver>
+        <identifier>new org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy("svm:hello-bpm:1.0.40", classLoader)</identifier>
+        <parameters/>
+    </marshalling-strategy>
+</marshalling-strategies>
+```
