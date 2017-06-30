@@ -66,11 +66,11 @@ public class ServiceHandler {
 
     public void complete(ServiceResponse lastServiceResponse) throws IllegalStateException, WorkerException {
 
-        if(!context.getCurrentState().equals(ServiceState.WAITING)){
+        if(context.getCurrentState() == null || !context.getCurrentState().equals(ServiceState.WAITING)){
 
             LOG.warn("Trying to execute service from an illegal state: {} ", context.getCurrentState());
 
-            throw new IllegalStateException("Cannot complete service from state: " + context.getCurrentState().value());
+            throw new IllegalStateException("Cannot complete service from state: " + context.getCurrentState());
         }
 
         if(lastServiceResponse.getWorkerCallState().isCompleted()){

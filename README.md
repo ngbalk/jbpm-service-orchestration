@@ -98,8 +98,13 @@ Data Inputs And Assignments
 | CommandClass  |   String      | org.rhc.workflow.commands.InvokeServiceCommand |
 | Retries       |   Integer     | 3 |
 | RetryDelay    |   String      | 5s, 10s, 15s |
-| Priority      |   Integer     |   0
+| Priority      |   Integer     |   0 |
 | serviceName   |   String      |    some-service-name    |
+| callbackSignalName   |   String      |    SignalA    |
+| data | org.rhc.workflow.models.DataWrapper | dataWrapper |
+
+NOTE: For testing purposes, you can pass a url of your mock service directly to the WIH by prepending your serviceName with '$TEST:'
+For example, you could pass a url of your mock worker i.e. $TEST:http://some.ip.address:3000/mock-worker
 
 Data Outputs And Assignments
 
@@ -124,14 +129,13 @@ Data Inputs And Assignments
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
 | lastServiceResponse  |   org.rhc.workflow.common.ServiceResponse      | lastServiceResponse |
-| data | java.util.Map | data
 | state| org.rhc.workflow.states.ServiceState | state
 
 Data Outputs And Assignments
 
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
-| data | java.util.Map | data
+| dataWrapper | org.rhc.workflow.models.DataWrapper | dataWrapper
 | state| org.rhc.workflow.states.ServiceState | state
 
 

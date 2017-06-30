@@ -18,6 +18,7 @@ import org.rhc.workflow.common.ProcessStateCommandFactory;
 import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.common.RequestBuilder;
 import org.rhc.workflow.common.ServiceRequest;
+import org.rhc.workflow.models.DataWrapper;
 import org.rhc.workflow.services.ServiceHandler;
 import org.rhc.workflow.states.ServiceState;
 import org.slf4j.Logger;
@@ -64,10 +65,17 @@ public class InvokeServiceCommand implements Command{
 
         String signalName = (String) workItem.getParameter(CALLBACK_SIGNAL_NAME);
 
-        Map<String, String> data = (HashMap<String,String>) workItem.getParameter(DATA);
+        DataWrapper dataWrapper = (DataWrapper) workItem.getParameter(DATA);
 
-        if(data == null) {
-            data = new HashMap<>();
+        Map<String, String> data;
+
+        if(dataWrapper == null || dataWrapper.getData() == null){
+
+            data =  new HashMap<>();
+        }
+        else{
+
+            data = dataWrapper.getData();
         }
 
         RuntimeManager runtimeManager = RuntimeManagerRegistry.get().getManager(deploymentId);

@@ -25,11 +25,30 @@ public class DataWrapper extends VariableEntity implements Serializable {
     @Column(name = "field_val", length = 128)
     private Map<String, String> data = new HashMap<>();
 
+    public DataWrapper(Map<String, String> data){
+        this.data = data;
+    }
+
+    public DataWrapper(){}
+
     public Map<String, String> getData() {
         return data;
     }
 
     public void setData(Map<String, String> data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        if(data == null){
+            return "empty";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("DataWrapper:");
+        for(String key : data.keySet()){
+            sb.append("\n" + key + " : " + data.get(key));
+        }
+        return sb.toString();
     }
 }

@@ -144,6 +144,57 @@ public class RenewalsTests {
 
     }
 
+    @Test
+    public void executeCompleteFailsWhenStateIsNull(){
+
+        StateContext context = new StateContext(new HashMap<>(),null);
+
+        ServiceResponse response = new ServiceResponse();
+
+        WorkerCallState workerCallState = new WorkerCallState();
+
+        workerCallState.setCompleted(true);
+
+        response.setWorkerCallState(workerCallState);
+
+        ServiceHandler executor = new ServiceHandler(context);
+
+        try {
+            executor.complete(response);
+            Assert.fail();
+        } catch(IllegalStateException e){
+            e.printStackTrace();
+        } catch (WorkerException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void executeCompleteFailsWhenStateIsNotWaiting(){
+
+        StateContext context = new StateContext(new HashMap<>(),ServiceState.NOT_STARTED);
+
+        ServiceResponse response = new ServiceResponse();
+
+        WorkerCallState workerCallState = new WorkerCallState();
+
+        workerCallState.setCompleted(true);
+
+        response.setWorkerCallState(workerCallState);
+
+        ServiceHandler executor = new ServiceHandler(context);
+
+        try {
+            executor.complete(response);
+            Assert.fail();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            Assert.fail();
+        }
+    }
+
 
     @Test
     public void testTimeoutWorks(){
