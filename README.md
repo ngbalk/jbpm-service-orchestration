@@ -28,8 +28,8 @@ Navigate to "Deployment Descriptor Editor" and add the following entry under "Wo
 
 |     Value      |  Value   |
 | ------------- |:-------------|
-AsyncService    |   new org.jbpm.executor.impl.wih.AsyncWorkItemHandler(org.jbpm.executor.ExecutorServiceFactory.newExecutorService())|
-CompleteService |   new org.rhc.workflow.workitems.CompleteServiceWorkItemHandler()                                                   |
+|AsyncService    |   new org.jbpm.executor.impl.wih.AsyncWorkItemHandler(org.jbpm.executor.ExecutorServiceFactory.newExecutorService())|
+|CompleteService |   new org.rhc.workflow.workitems.CompleteServiceWorkItemHandler()                                                   |
 
 
 Or add directly to kie-deployment-descriptor.xml
