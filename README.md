@@ -50,15 +50,38 @@ Or add directly to kie-deployment-descriptor.xml
 #### 4) Register AsyncWorkItemHandler for process editing
 If you want to be able to access your fancy new WIH from the process editor within Business Central, you will need to register it as a WorkItemDefinition.
 ```
+import org.drools.core.process.core.datatype.impl.type.StringDataType;
+import org.drools.core.process.core.datatype.impl.type.ObjectDataType;
+import org.drools.core.process.core.datatype.impl.type.IntegerDataType;
+
 [
-   "name" : "CompleteService",
-   "displayName" : "Complete Service",
-   "icon" : "defaultservicenodeicon.png"
+    "name" : "AsyncService",
+    "displayName" : "Async Service",
+    "icon" : "defaultservicenodeicon.png",
+    "parameters" : [
+        "CommandClass" :  new StringDataType(),
+        "Retries" : new IntegerDataType(),
+        "RetryDelay" : new StringDataType(),
+        "serviceName" : new StringDataType(),
+        "callbackSignalName" : new StringDataType(),
+        "data" : new ObjectDataType("org.rhc.workflow.models.DataWrapper")
+       ],
+    "results" : [
+        "state" : new ObjectDataType("org.rhc.workflow.states.ServiceState")
+        ]
 ],
 [
-   "name" : "AsyncService",
-   "displayName" : "Async Service",
-   "icon" : "defaultservicenodeicon.png"
+    "name" : "CompleteService",
+    "displayName" : "Complete Service",
+    "icon" : "defaultservicenodeicon.png",
+    "parameters" : [
+        "lastServiceResponse" : new ObjectDataType("org.rhc.workflow.common.ServiceResponse"),
+        "state" : new ObjectDataType("org.rhc.workflow.states.ServiceState"),
+       ],
+    "results" : [
+        "state" : new ObjectDataType("org.rhc.workflow.states.ServiceState"),
+        "dataWrapper" : new ObjectDataType("org.rhc.workflow.models.DataWrapper")
+        ]
 ]
 ```
 The "name" should correspond to what you registered in the Deployment Descriptor
@@ -98,7 +121,6 @@ Data Inputs And Assignments
 | CommandClass  |   String      | org.rhc.workflow.commands.InvokeServiceCommand |
 | Retries       |   Integer     | 3 |
 | RetryDelay    |   String      | 5s, 10s, 15s |
-| Priority      |   Integer     |   0 |
 | serviceName   |   String      |    some-service-name    |
 | callbackSignalName   |   String      |    SignalA    |
 | data | org.rhc.workflow.models.DataWrapper | dataWrapper |
@@ -162,4 +184,14 @@ We will make changes to the following files to enable this at the project level:
         <parameters/>
     </marshalling-strategy>
 </marshalling-strategies>
+```
+
+#### 10) Set DataWrapper in the process
+Our process takes a java.util.Map data as input, but because we are using JPA persistence, we have to convert this data to our DataWrapper.
+So we must have a step where we build this DataWrapper object from our data Map.  Do this in a simple script task at the beginning of the process.
+Make sure to import org.rhc.workflow.models.DataWrapper into your process.
+
+```java
+DataWrapper dw = new DataWrapper(data);
+kcontext.setVariable("dataWrapper",dw);
 ```
