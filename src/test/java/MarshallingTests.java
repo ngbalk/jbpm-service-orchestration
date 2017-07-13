@@ -9,12 +9,10 @@ import org.rhc.workflow.common.SignalInstanceInfo;
 import org.rhc.workflow.errors.Severity;
 import org.rhc.workflow.errors.WorkerError;
 import org.rhc.workflow.models.IncidentData;
+import org.rhc.workflow.models.PaymentData;
 import org.rhc.workflow.states.WorkerCallState;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by nbalkiss on 6/7/17.
@@ -119,6 +117,43 @@ public class MarshallingTests {
         Assert.assertNotNull(unmarshal.getData());
 
         Assert.assertNotNull(((IncidentData)unmarshal.getData()));
+
+        Assert.assertEquals(unmarshal,serviceRequest);
+    }
+
+
+    @Test
+    public void testMarshalWithPaymentData(){
+
+        ServiceRequest serviceRequest = new ServiceRequest();
+
+        PaymentData paymentData = new PaymentData(UUID.randomUUID().toString(),UUID.randomUUID().toString());
+
+        paymentData.setId(1L);
+
+        serviceRequest.setData(paymentData);
+
+        HashMap<String,Object> wrapper = new HashMap<>();
+
+        wrapper.put(ServiceRequest.class.getName(),serviceRequest);
+
+        Set<Class<?>> allClasses = new HashSet<Class<?>>();
+
+        allClasses.add(PaymentData.class);
+
+        Marshaller marshaller = MarshallerFactory.getMarshaller(allClasses, MarshallingFormat.JSON, this.getClass().getClassLoader());
+
+        String payload = marshaller.marshall(wrapper);
+
+        System.out.println(payload);
+
+        ServiceRequest unmarshal = (ServiceRequest) marshaller.unmarshall(payload, Object.class);
+
+        Assert.assertTrue(unmarshal instanceof ServiceRequest);
+
+        Assert.assertNotNull(unmarshal.getData());
+
+        Assert.assertNotNull(((PaymentData)unmarshal.getData()));
 
         Assert.assertEquals(unmarshal,serviceRequest);
     }
