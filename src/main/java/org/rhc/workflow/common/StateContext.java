@@ -2,8 +2,6 @@ package org.rhc.workflow.common;
 
 import org.rhc.workflow.states.ServiceState;
 
-import java.util.Map;
-
 /**
  * Created by nbalkiss on 5/10/17.
  */
@@ -11,9 +9,9 @@ public class StateContext {
 
     private ServiceState currentState;
 
-    private Map<String, String> data;
+    private Object data;
 
-    public StateContext(Map<String, String> data, ServiceState currentState) {
+    public StateContext(Object data, ServiceState currentState) {
         this.data = data;
         this.currentState = currentState;
     }
@@ -26,11 +24,11 @@ public class StateContext {
         this.currentState = currentState;
     }
 
-    public Map<String, String> getData() {
+    public Object getData() {
         return data;
     }
 
-    public void setData(Map<String, String> data) {
+    public void setData(Object data) {
         this.data = data;
     }
 }

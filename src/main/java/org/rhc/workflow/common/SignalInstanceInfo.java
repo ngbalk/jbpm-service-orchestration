@@ -60,4 +60,26 @@ public class SignalInstanceInfo {
     public void setSignalName(String signalName) {
         this.signalName = signalName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SignalInstanceInfo that = (SignalInstanceInfo) o;
+
+        if (containerId != null ? !containerId.equals(that.containerId) : that.containerId != null) return false;
+        if (processInstanceId != null ? !processInstanceId.equals(that.processInstanceId) : that.processInstanceId != null)
+            return false;
+        return signalName != null ? signalName.equals(that.signalName) : that.signalName == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = containerId != null ? containerId.hashCode() : 0;
+        result = 31 * result + (processInstanceId != null ? processInstanceId.hashCode() : 0);
+        result = 31 * result + (signalName != null ? signalName.hashCode() : 0);
+        return result;
+    }
 }

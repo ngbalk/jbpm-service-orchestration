@@ -1,8 +1,8 @@
 package org.rhc.workflow.services;
 
-import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.common.ServiceRequest;
 import org.rhc.workflow.common.ServiceResponse;
+import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.config.SVMServiceConfig;
 import org.rhc.workflow.errors.ServiceConfigurationException;
 import org.rhc.workflow.errors.ServiceException;

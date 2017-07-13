@@ -6,19 +6,18 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Map;
 
 /**
  * Created by nbalkiss on 5/16/17.
  */
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class ServiceRequest {
 
     @XmlElement(name="Data")
     @JsonProperty("Data")
-    private Map<String, String> data;
+    private Object data;
 
     @XmlElement(name="WorkerName")
     @JsonProperty("WorkerName")
@@ -28,11 +27,11 @@ public class ServiceRequest {
     @JsonProperty("SignalInstanceInfo")
     private SignalInstanceInfo signalInstanceInfo;
 
-    public Map<String, String> getData() {
+    public Object getData() {
         return data;
     }
 
-    public void setData(Map<String, String> data) {
+    public void setData(Object data) {
         this.data = data;
     }
 
@@ -50,5 +49,34 @@ public class ServiceRequest {
 
     public void setSignalInstanceInfo(SignalInstanceInfo signalInstanceInfo) {
         this.signalInstanceInfo = signalInstanceInfo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ServiceRequest that = (ServiceRequest) o;
+
+        if(data !=null){
+            if(that.getData()==null){
+                return false;
+            }
+            if(!data.equals(that.getData())){
+                return false;
+            }
+        }
+
+        if (workerName != null ? !workerName.equals(that.workerName) : that.workerName != null) return false;
+        return signalInstanceInfo != null ? signalInstanceInfo.equals(that.signalInstanceInfo) : that.signalInstanceInfo == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = data != null ? data.hashCode() : 0;
+        result = 31 * result + (workerName != null ? workerName.hashCode() : 0);
+        result = 31 * result + (signalInstanceInfo != null ? signalInstanceInfo.hashCode() : 0);
+        return result;
     }
 }

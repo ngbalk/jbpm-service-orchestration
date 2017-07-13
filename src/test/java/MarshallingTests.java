@@ -3,10 +3,12 @@ import org.junit.Test;
 import org.kie.server.api.marshalling.Marshaller;
 import org.kie.server.api.marshalling.MarshallerFactory;
 import org.kie.server.api.marshalling.MarshallingFormat;
+import org.rhc.workflow.common.ServiceRequest;
 import org.rhc.workflow.common.ServiceResponse;
 import org.rhc.workflow.common.SignalInstanceInfo;
 import org.rhc.workflow.errors.Severity;
 import org.rhc.workflow.errors.WorkerError;
+import org.rhc.workflow.models.IncidentData;
 import org.rhc.workflow.states.WorkerCallState;
 
 import java.util.Arrays;
@@ -30,10 +32,28 @@ public class MarshallingTests {
         ServiceResponse serviceResponse = (ServiceResponse) unmarshal;
         Assert.assertNotNull(serviceResponse.getMessage());
         Assert.assertNotNull(serviceResponse.getData());
+        Assert.assertEquals(((HashMap<String,String>)serviceResponse.getData()).get("uID"),"12345");
         Assert.assertNotNull(serviceResponse.getWorkerName());
         Assert.assertNotNull(serviceResponse.getSignalInstanceInfo());
         Assert.assertNotNull(serviceResponse.getSignalInstanceInfo().getSignalName());
 
+    }
+
+    @Test
+    public void testUnmarshalCustomDomainDataObject(){
+
+        String data = "{\"org.rhc.workflow.common.ServiceResponse\":{\"Data\":{\"org.rhc.workflow.models.IncidentData\":{\"ID\":123,\"SupportActivityId\":\"abcdef\",\"OrganizationId\":\"xyz\",\"IncidentType\":\"Normal\"}},\"SignalInstanceInfo\":{\"ContainerId\":\"SVMContainer\",\"ProcessInstanceId\":1,\"SignalName\":\"A\"},\"Message\":\"SUCCESS\",\"WorkerName\":\"generate-renewal-success\",\"WorkerCallState\":{\"Completed\":true}}}";
+
+        Marshaller marshaller = MarshallerFactory.getMarshaller(null, MarshallingFormat.JSON, this.getClass().getClassLoader());
+        Object unmarshal = marshaller.unmarshall(data, Object.class);
+        ServiceResponse serviceResponse = (ServiceResponse) unmarshal;
+
+        Assert.assertNotNull(serviceResponse.getMessage());
+        Assert.assertNotNull(serviceResponse.getData());
+        Assert.assertEquals(((IncidentData) serviceResponse.getData()).getIncidentType(),"Normal");
+        Assert.assertNotNull(serviceResponse.getWorkerName());
+        Assert.assertNotNull(serviceResponse.getSignalInstanceInfo());
+        Assert.assertNotNull(serviceResponse.getSignalInstanceInfo().getSignalName());
     }
 
     @Test
@@ -42,7 +62,7 @@ public class MarshallingTests {
         ServiceResponse response = new ServiceResponse();
         response.setMessage("FAIL");
         response.setWorkerName("my-worker");
-        HashMap<String,String> data = new HashMap<>();
+        HashMap<String, Object> data = new HashMap<String, Object>();
         data.put("uID","12345");
         data.put("pId","abcdef");
         response.setData(data);
@@ -64,4 +84,43 @@ public class MarshallingTests {
         System.out.println(payload);
 
     }
+
+    @Test
+    public void testMarshalUnmarshalWithCustomDomainDataObjectAndWrapper(){
+
+        ServiceRequest serviceRequest = new ServiceRequest();
+
+        IncidentData incidentData = new IncidentData("xyz","123","abc");
+
+        incidentData.setId(1L);
+
+        serviceRequest.setData(incidentData);
+
+        HashMap<String,Object> wrapper = new HashMap<>();
+
+        wrapper.put(ServiceRequest.class.getName(),serviceRequest);
+
+        Set<Class<?>> allClasses = new HashSet<Class<?>>();
+
+        allClasses.add(IncidentData.class);
+
+//        allClasses.add(ServiceRequest.class);
+
+        Marshaller marshaller = MarshallerFactory.getMarshaller(allClasses, MarshallingFormat.JSON, this.getClass().getClassLoader());
+
+        String payload = marshaller.marshall(wrapper);
+
+        System.out.println(payload);
+
+        ServiceRequest unmarshal = (ServiceRequest) marshaller.unmarshall(payload, Object.class);
+
+        Assert.assertTrue(unmarshal instanceof ServiceRequest);
+
+        Assert.assertNotNull(unmarshal.getData());
+
+        Assert.assertNotNull(((IncidentData)unmarshal.getData()));
+
+        Assert.assertEquals(unmarshal,serviceRequest);
+    }
+
 }

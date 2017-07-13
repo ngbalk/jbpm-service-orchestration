@@ -5,10 +5,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.common.RequestBuilder;
 import org.rhc.workflow.common.ServiceRequest;
 import org.rhc.workflow.common.ServiceResponse;
+import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.errors.ServiceException;
 import org.rhc.workflow.errors.ServiceRESTException;
 import org.rhc.workflow.errors.WorkerError;
@@ -50,13 +50,13 @@ public class RenewalsTests {
     @Test
     public void testServiceStateTransitionToWaiting(){
 
-        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<String, Object>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
         ServiceRequest request =
                 RequestBuilder.get()
-                        .addData(new HashMap<>())
+                        .addData(new HashMap<String, Object>())
                         .addContainerId("SVMContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
@@ -76,14 +76,14 @@ public class RenewalsTests {
     @Test
     public void testServiceStateTransitionToCompletion() throws WorkerException {
 
-        Map<String,String> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<String, Object>();
         data.put("uId","12345");
 
         ServiceState currentState = ServiceState.WAITING;
 
         StateContext context = new StateContext(data,currentState);
 
-        HashMap<String, String> newData = new HashMap<>();
+        HashMap<String, Object> newData = new HashMap<String, Object>();
         newData.put("uId","12345");
         newData.put("pId","abcdef");
 
@@ -100,20 +100,20 @@ public class RenewalsTests {
         executor.complete(response);
 
         Assert.assertEquals(ServiceState.COMPLETED, context.getCurrentState());
-        Assert.assertNotNull(context.getData().get("pId"));
+        Assert.assertNotNull(((Map<String,Object>)context.getData()).get("pId"));
     }
 
     @Test
     public void testServiceStateTransitionToError(){
 
-        Map<String,String> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<String, Object>();
         data.put("uId","12345");
 
         ServiceState currentState = ServiceState.WAITING;
 
         StateContext context = new StateContext(data,currentState);
 
-        HashMap<String, String> newData = new HashMap<>();
+        HashMap<String, Object> newData = new HashMap<String, Object>();
         newData.put("uId","12345");
         newData.put("pId","abcdef");
 
@@ -139,7 +139,7 @@ public class RenewalsTests {
         } catch (WorkerException e) {
             e.printStackTrace();
             Assert.assertEquals(ServiceState.ERROR, context.getCurrentState());
-            Assert.assertNull(context.getData().get("pId"));
+            Assert.assertNull(((Map<String,Object>)context.getData()).get("pId"));
         }
 
     }
@@ -147,7 +147,7 @@ public class RenewalsTests {
     @Test
     public void executeCompleteFailsWhenStateIsNull(){
 
-        StateContext context = new StateContext(new HashMap<>(),null);
+        StateContext context = new StateContext(new HashMap<String, Object>(),null);
 
         ServiceResponse response = new ServiceResponse();
 
@@ -173,7 +173,7 @@ public class RenewalsTests {
     @Test
     public void executeCompleteFailsWhenStateIsNotWaiting(){
 
-        StateContext context = new StateContext(new HashMap<>(),ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<String, Object>(),ServiceState.NOT_STARTED);
 
         ServiceResponse response = new ServiceResponse();
 
@@ -199,13 +199,13 @@ public class RenewalsTests {
     @Test
     public void testTimeoutWorks(){
 
-        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<String, Object>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
         ServiceRequest request =
                 RequestBuilder.get()
-                        .addData(new HashMap<>())
+                        .addData(new HashMap<String, Object>())
                         .addContainerId("SVMContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
@@ -226,13 +226,13 @@ public class RenewalsTests {
     @Test
     public void test404Exception(){
 
-        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<String, Object>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
         ServiceRequest request =
                 RequestBuilder.get()
-                        .addData(new HashMap<>())
+                        .addData(new HashMap<String, Object>())
                         .addContainerId("SVMContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
@@ -252,13 +252,13 @@ public class RenewalsTests {
     @Test
     public void testServiceSuccessfullyRetries(){
 
-        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<String, Object>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
         ServiceRequest request =
                 RequestBuilder.get()
-                        .addData(new HashMap<>())
+                        .addData(new HashMap<String, Object>())
                         .addContainerId("SVMContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
@@ -303,11 +303,11 @@ public class RenewalsTests {
     @Test
     public void testTESTFlagModeWithValidServiceSucceeds() throws Exception{
 
-        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<String, Object>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
-        HashMap<String,String> data = new HashMap<>();
+        HashMap<String, Object> data = new HashMap<String, Object>();
         data.put("uID","12345");
 
         ServiceRequest request =
@@ -329,11 +329,11 @@ public class RenewalsTests {
     @Test
     public void testTESTFlagModeWithInValidServiceFails(){
 
-        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<String, Object>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
-        HashMap<String,String> data = new HashMap<>();
+        HashMap<String, Object> data = new HashMap<String, Object>();
         data.put("uID","12345");
 
         ServiceRequest request =

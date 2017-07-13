@@ -29,7 +29,43 @@ var server = http.createServer(function(req, res) {
                 response.WorkerCallState = {};
                 response.WorkerCallState.Completed = true;
 
-                var payload = JSON.stringify(marshaller(response));
+                var payload = JSON.stringify(marshallerWrapper(response,"org.rhc.workflow.common.ServiceResponse"));
+
+                callback(request.SignalInstanceInfo.ContainerId,request.SignalInstanceInfo.ProcessInstanceId,request.SignalInstanceInfo.SignalName,payload);
+            });
+
+            res.writeHead(200, {'Content-Type': 'text/html'});
+
+            res.end('post received');
+        }
+
+        if (url.parse(req.url).pathname == '/incident') {
+
+            console.log("POST to /incidents");
+
+            var body = "";
+            req.on('data', function (data) {
+
+                body+=data;
+            });
+
+            req.on('end', function(){
+
+                var request = JSON.parse(body);
+                console.log("Request: " + JSON.stringify(request));
+                var response = {};
+
+                var data = request.Data;
+                data.SupportActivityId = "def";
+                
+                response.Data = marshallerWrapper(data,"org.rhc.workflow.models.IncidentData");
+                response.SignalInstanceInfo = request.SignalInstanceInfo;
+                response.Message = "SUCCESS"
+                response.WorkerName = request.WorkerName;
+                response.WorkerCallState = {};
+                response.WorkerCallState.Completed = true;
+
+                var payload = JSON.stringify(marshallerWrapper(response,"org.rhc.workflow.common.ServiceResponse"));
 
                 callback(request.SignalInstanceInfo.ContainerId,request.SignalInstanceInfo.ProcessInstanceId,request.SignalInstanceInfo.SignalName,payload);
             });
@@ -105,9 +141,9 @@ function callback(containerId,processInstanceId,signalName,payload){
     req.end();
 }
 
-function marshaller(payload){
+function marshallerWrapper(payload, typeInfo){
     var marshalledPayload = {};
-    marshalledPayload["org.rhc.workflow.common.ServiceResponse"] = payload;
+    marshalledPayload[typeInfo] = payload;
     return marshalledPayload;
 }
 

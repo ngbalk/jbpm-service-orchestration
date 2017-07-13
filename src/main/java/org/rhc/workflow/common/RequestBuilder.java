@@ -1,13 +1,11 @@
 package org.rhc.workflow.common;
 
-import java.util.Map;
-
 /**
  * Created by nbalkiss on 5/16/17.
  */
 public class RequestBuilder {
 
-    private Map<String, String> data;
+    private Object data;
 
     private String serviceName;
 
@@ -21,7 +19,7 @@ public class RequestBuilder {
         return new RequestBuilder();
     }
 
-    public RequestBuilder addData(Map<String, String> data){
+    public RequestBuilder addData(Object data){
 
         this.data = data;
 

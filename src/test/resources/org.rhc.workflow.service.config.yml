@@ -25,3 +25,6 @@ services:
   - name: generate-renewal-error
     url: http://localhost:3000/generate-renewal-error
 
+  - name: wire-mock
+    url: http://localhost:8089/wire-mock
+

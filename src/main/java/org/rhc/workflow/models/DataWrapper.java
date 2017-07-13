@@ -23,19 +23,19 @@ public class DataWrapper extends VariableEntity implements Serializable {
     @ElementCollection(targetClass=String.class)
     @MapKeyColumn(name = "field_name", length = 64)
     @Column(name = "field_val", length = 128)
-    private Map<String, String> data = new HashMap<>();
+    private Map<String, Object> data = new HashMap<String, Object>();
 
-    public DataWrapper(Map<String, String> data){
+    public DataWrapper(Map<String, Object> data){
         this.data = data;
     }
 
     public DataWrapper(){}
 
-    public Map<String, String> getData() {
+    public Map<String, Object> getData() {
         return data;
     }
 
-    public void setData(Map<String, String> data) {
+    public void setData(Map<String, Object> data) {
         this.data = data;
     }
 
@@ -46,7 +46,7 @@ public class DataWrapper extends VariableEntity implements Serializable {
         }
         StringBuilder sb = new StringBuilder();
         sb.append("DataWrapper:");
-        for(String key : data.keySet()){
+        for(Object key : data.keySet()){
             sb.append("\n" + key + " : " + data.get(key));
         }
         return sb.toString();

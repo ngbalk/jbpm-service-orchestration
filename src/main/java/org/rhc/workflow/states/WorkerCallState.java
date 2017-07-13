@@ -6,6 +6,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.rhc.workflow.errors.WorkerError;
 
 import javax.xml.bind.annotation.*;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -16,7 +17,9 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="WorkerCallState")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class WorkerCallState {
+public class WorkerCallState implements Serializable{
+
+    static final long serialVersionUID = 6329230923648192L;
 
     @XmlElement(name="Completed")
     @JsonProperty("Completed")

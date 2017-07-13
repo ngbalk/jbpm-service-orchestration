@@ -6,6 +6,7 @@ import org.kie.api.remote.Remotable;
 import org.rhc.workflow.states.WorkerCallState;
 
 import javax.xml.bind.annotation.*;
+import java.io.Serializable;
 
 /**
  * Created by nbalkiss on 5/16/17.
@@ -16,7 +17,9 @@ import javax.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="ServiceResponse")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class ServiceResponse extends ServiceRequest {
+public class ServiceResponse extends ServiceRequest implements Serializable{
+
+    static final long serialVersionUID = 8735498L;
 
     @XmlElement(name="Message")
     @JsonProperty("Message")

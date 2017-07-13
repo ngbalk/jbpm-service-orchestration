@@ -2,9 +2,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.common.RequestBuilder;
 import org.rhc.workflow.common.ServiceRequest;
+import org.rhc.workflow.common.StateContext;
+import org.rhc.workflow.models.IncidentData;
 import org.rhc.workflow.services.ServiceHandler;
 import org.rhc.workflow.states.ServiceState;
 
@@ -24,7 +25,7 @@ public class CallbackTests {
             pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
             pb.redirectError(ProcessBuilder.Redirect.INHERIT);
             this.exec = pb.start();
-            Thread.sleep(100);
+            Thread.sleep(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -43,11 +44,11 @@ public class CallbackTests {
     @Test
     public void testCallToServiceWithCallback() throws Exception{
 
-        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<String, Object>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
-        HashMap<String,String> data = new HashMap<>();
+        HashMap<String, Object> data = new HashMap<String, Object>();
         data.put("uID","12345");
 
         ServiceRequest request =
@@ -68,11 +69,11 @@ public class CallbackTests {
     @Test
     public void testCallToServiceWithCallbackError() throws Exception{
 
-        StateContext context = new StateContext(new HashMap<>(), ServiceState.NOT_STARTED);
+        StateContext context = new StateContext(new HashMap<String, Object>(), ServiceState.NOT_STARTED);
 
         ServiceHandler executor = new ServiceHandler(context);
 
-        HashMap<String,String> data = new HashMap<>();
+        HashMap<String, Object> data = new HashMap<String, Object>();
         data.put("uID","12345");
 
         ServiceRequest request =
@@ -88,6 +89,29 @@ public class CallbackTests {
         executor.execute(request);
         Assert.assertEquals(ServiceState.WAITING, context.getCurrentState());
 
+    }
+
+    @Test
+    public void testCallWithCustomDomainObjectData() throws Exception{
+
+        StateContext context = new StateContext(new HashMap<String, Object>(), ServiceState.NOT_STARTED);
+        ServiceHandler executor = new ServiceHandler(context);
+        HashMap<String, Object> data = new HashMap<String, Object>();
+
+        IncidentData incidentData = new IncidentData("abcdef","xyz","Normal");
+
+        data.put("incidentData", incidentData);
+
+        ServiceRequest request =
+                RequestBuilder.get()
+                        .addData(data)
+                        .addContainerId("SVMContainer")
+                        .addProcessInstanceId(1L)
+                        .addSignalName("A")
+                        .addServiceName("generate-renewal-success")
+                        .buildRequest();
+
+        executor.execute(request);
     }
 
 }

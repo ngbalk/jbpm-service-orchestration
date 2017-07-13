@@ -3,9 +3,8 @@ package org.rhc.workflow.workitems;
 import org.jbpm.process.workitem.AbstractLogOrThrowWorkItemHandler;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
-import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.common.ServiceResponse;
-import org.rhc.workflow.models.DataWrapper;
+import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.services.ServiceHandler;
 import org.rhc.workflow.states.ServiceState;
 
@@ -25,7 +24,7 @@ public class CompleteServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHa
 
         ServiceState state = (ServiceState) workItem.getParameter("state");
 
-        Map<String, String> data = (Map<String,String>) workItem.getParameter("data");
+        Map<String, Object> data = (Map<String,Object>) workItem.getParameter("data");
 
         ServiceResponse lastServiceResponse = (ServiceResponse) workItem.getParameter("lastServiceResponse");
 
@@ -36,7 +35,7 @@ public class CompleteServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHa
         try{
             handler.complete(lastServiceResponse);
 
-            parameters.put("dataWrapper", new DataWrapper(context.getData()));
+            parameters.put("data", context.getData());
 
             parameters.put("state",context.getCurrentState());
         }

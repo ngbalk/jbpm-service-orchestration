@@ -15,18 +15,15 @@ import org.kie.api.runtime.query.QueryContext;
 import org.kie.internal.runtime.manager.RuntimeManagerRegistry;
 import org.kie.internal.runtime.manager.context.ProcessInstanceIdContext;
 import org.rhc.workflow.common.ProcessStateCommandFactory;
-import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.common.RequestBuilder;
 import org.rhc.workflow.common.ServiceRequest;
-import org.rhc.workflow.models.DataWrapper;
+import org.rhc.workflow.common.StateContext;
 import org.rhc.workflow.services.ServiceHandler;
 import org.rhc.workflow.states.ServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by nbalkiss on 5/17/17.
@@ -65,17 +62,13 @@ public class InvokeServiceCommand implements Command{
 
         String signalName = (String) workItem.getParameter(CALLBACK_SIGNAL_NAME);
 
-        DataWrapper dataWrapper = (DataWrapper) workItem.getParameter(DATA);
+        Object data = workItem.getParameter(DATA);
 
-        Map<String, String> data;
+        if(data == null){
 
-        if(dataWrapper == null || dataWrapper.getData() == null){
+            data = new Object();
 
-            data =  new HashMap<>();
-        }
-        else{
-
-            data = dataWrapper.getData();
+            LOG.warn("Domain data object is null, this could cause problems");
         }
 
         RuntimeManager runtimeManager = RuntimeManagerRegistry.get().getManager(deploymentId);
