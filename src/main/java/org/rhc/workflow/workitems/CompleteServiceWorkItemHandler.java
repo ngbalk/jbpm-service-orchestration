@@ -24,7 +24,7 @@ public class CompleteServiceWorkItemHandler extends AbstractLogOrThrowWorkItemHa
 
         ServiceState state = (ServiceState) workItem.getParameter("state");
 
-        Map<String, Object> data = (Map<String,Object>) workItem.getParameter("data");
+        Object data = workItem.getParameter("data");
 
         ServiceResponse lastServiceResponse = (ServiceResponse) workItem.getParameter("lastServiceResponse");
 

@@ -1,6 +1,7 @@
 package org.rhc.workflow.models;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.drools.persistence.jpa.marshaller.VariableEntity;
 
@@ -16,15 +17,14 @@ import java.io.Serializable;
 @Entity
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class PaymentData extends VariableEntity implements Serializable{
+public class PaymentData extends VariableEntity implements Serializable, Copyable{
 
     static final long serialVersionUID = 365784392199L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "payment_data_id")
-    @XmlElement(name="ID")
-    @JsonProperty("ID")
+    @JsonIgnore
     public Long id;
 
     @Column(name = "payment_id", length = 128)
@@ -90,5 +90,15 @@ public class PaymentData extends VariableEntity implements Serializable{
         if (paymentId != null ? !paymentId.equals(that.paymentId) : that.paymentId != null) return false;
         return retryId != null ? retryId.equals(that.retryId) : that.retryId == null;
 
+    }
+
+    @Override
+    public boolean copy(Object other) {
+        if(other == null || !(other instanceof PaymentData)){
+            return false;
+        }
+        this.setPaymentId(((PaymentData) other).getPaymentId());
+        this.setRetryId(((PaymentData) other).getRetryId());
+        return true;
     }
 }

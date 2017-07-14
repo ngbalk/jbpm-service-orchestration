@@ -19,6 +19,10 @@ public class ServiceRequest {
     @JsonProperty("Data")
     private Object data;
 
+    @XmlElement(name="DataType")
+    @JsonProperty("DataType")
+    private String dataType;
+
     @XmlElement(name="WorkerName")
     @JsonProperty("WorkerName")
     private String workerName;
@@ -33,6 +37,14 @@ public class ServiceRequest {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public String getWorkerName() {
@@ -58,15 +70,8 @@ public class ServiceRequest {
 
         ServiceRequest that = (ServiceRequest) o;
 
-        if(data !=null){
-            if(that.getData()==null){
-                return false;
-            }
-            if(!data.equals(that.getData())){
-                return false;
-            }
-        }
-
+        if (data != null ? !data.equals(that.data) : that.data != null) return false;
+        if (dataType != null ? !dataType.equals(that.dataType) : that.dataType != null) return false;
         if (workerName != null ? !workerName.equals(that.workerName) : that.workerName != null) return false;
         return signalInstanceInfo != null ? signalInstanceInfo.equals(that.signalInstanceInfo) : that.signalInstanceInfo == null;
 
@@ -75,6 +80,7 @@ public class ServiceRequest {
     @Override
     public int hashCode() {
         int result = data != null ? data.hashCode() : 0;
+        result = 31 * result + (dataType != null ? dataType.hashCode() : 0);
         result = 31 * result + (workerName != null ? workerName.hashCode() : 0);
         result = 31 * result + (signalInstanceInfo != null ? signalInstanceInfo.hashCode() : 0);
         return result;

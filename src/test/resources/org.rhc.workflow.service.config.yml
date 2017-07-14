@@ -28,3 +28,6 @@ services:
   - name: wire-mock
     url: http://localhost:8089/wire-mock
 
+  - name: payment-worker
+    url: https://dev.servsmartapi.com/V1/PaymentWorker/Payment
+

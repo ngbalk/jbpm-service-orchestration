@@ -3,6 +3,7 @@ import org.junit.Test;
 import org.kie.server.api.marshalling.Marshaller;
 import org.kie.server.api.marshalling.MarshallerFactory;
 import org.kie.server.api.marshalling.MarshallingFormat;
+import org.rhc.workflow.common.RequestBuilder;
 import org.rhc.workflow.common.ServiceRequest;
 import org.rhc.workflow.common.ServiceResponse;
 import org.rhc.workflow.common.SignalInstanceInfo;
@@ -38,7 +39,7 @@ public class MarshallingTests {
     }
 
     @Test
-    public void testUnmarshalCustomDomainDataObject(){
+    public void testUnmarshalIncidentDataObject(){
 
         String data = "{\"org.rhc.workflow.common.ServiceResponse\":{\"Data\":{\"org.rhc.workflow.models.IncidentData\":{\"ID\":123,\"SupportActivityId\":\"abcdef\",\"OrganizationId\":\"xyz\",\"IncidentType\":\"Normal\"}},\"SignalInstanceInfo\":{\"ContainerId\":\"SVMContainer\",\"ProcessInstanceId\":1,\"SignalName\":\"A\"},\"Message\":\"SUCCESS\",\"WorkerName\":\"generate-renewal-success\",\"WorkerCallState\":{\"Completed\":true}}}";
 
@@ -49,9 +50,11 @@ public class MarshallingTests {
         Assert.assertNotNull(serviceResponse.getMessage());
         Assert.assertNotNull(serviceResponse.getData());
         Assert.assertEquals(((IncidentData) serviceResponse.getData()).getIncidentType(),"Normal");
+        Assert.assertEquals(((IncidentData) serviceResponse.getData()).getSupportActivityId(),"abcdef");
         Assert.assertNotNull(serviceResponse.getWorkerName());
         Assert.assertNotNull(serviceResponse.getSignalInstanceInfo());
         Assert.assertNotNull(serviceResponse.getSignalInstanceInfo().getSignalName());
+        Assert.assertNull(((IncidentData) serviceResponse.getData()).getId());
     }
 
     @Test
@@ -84,13 +87,11 @@ public class MarshallingTests {
     }
 
     @Test
-    public void testMarshalUnmarshalWithCustomDomainDataObjectAndWrapper(){
+    public void testMarshalUnmarshalWithIncidentDataObjectAndWrapper(){
 
         ServiceRequest serviceRequest = new ServiceRequest();
 
         IncidentData incidentData = new IncidentData("xyz","123","abc");
-
-        incidentData.setId(1L);
 
         serviceRequest.setData(incidentData);
 
@@ -101,9 +102,7 @@ public class MarshallingTests {
         Set<Class<?>> allClasses = new HashSet<Class<?>>();
 
         allClasses.add(IncidentData.class);
-
-//        allClasses.add(ServiceRequest.class);
-
+        
         Marshaller marshaller = MarshallerFactory.getMarshaller(allClasses, MarshallingFormat.JSON, this.getClass().getClassLoader());
 
         String payload = marshaller.marshall(wrapper);
@@ -119,6 +118,41 @@ public class MarshallingTests {
         Assert.assertNotNull(((IncidentData)unmarshal.getData()));
 
         Assert.assertEquals(unmarshal,serviceRequest);
+    }
+
+    @Test
+    public void testDBGeneratedIdIsNotSerializedForIncidentData(){
+
+        ServiceRequest serviceRequest = new ServiceRequest();
+
+        IncidentData incidentData = new IncidentData("xyz","123","abc");
+
+        incidentData.setId(123L);
+
+        serviceRequest.setData(incidentData);
+
+        HashMap<String,Object> wrapper = new HashMap<>();
+
+        wrapper.put(ServiceRequest.class.getName(),serviceRequest);
+
+        Set<Class<?>> allClasses = new HashSet<Class<?>>();
+
+        allClasses.add(IncidentData.class);
+
+        Marshaller marshaller = MarshallerFactory.getMarshaller(allClasses, MarshallingFormat.JSON, this.getClass().getClassLoader());
+
+        String payload = marshaller.marshall(wrapper);
+
+        System.out.println(payload);
+
+        ServiceRequest unmarshal = (ServiceRequest) marshaller.unmarshall(payload, Object.class);
+
+        Assert.assertTrue(unmarshal instanceof ServiceRequest);
+
+        Assert.assertNotNull(unmarshal.getData());
+
+        Assert.assertNotEquals(((IncidentData) unmarshal.getData()).getId(),((IncidentData) serviceRequest.getData()).getId());
+
     }
 
 
@@ -155,7 +189,34 @@ public class MarshallingTests {
 
         Assert.assertNotNull(((PaymentData)unmarshal.getData()));
 
-        Assert.assertEquals(unmarshal,serviceRequest);
+        Assert.assertEquals(((PaymentData) unmarshal.getData()).getPaymentId(),((PaymentData)serviceRequest.getData()).getPaymentId());
+
+        Assert.assertEquals(((PaymentData) unmarshal.getData()).getRetryId(),((PaymentData)serviceRequest.getData()).getRetryId());
+
+        Assert.assertNull(((PaymentData) unmarshal.getData()).getId());
     }
 
+    @Test
+    public void testMarshalUnmarshalServiceRequestWithDataType(){
+
+        ServiceRequest serviceRequest = RequestBuilder.get()
+                .addDataType(new IncidentData().getClass().getName())
+                .buildRequest();
+
+        HashMap<String,Object> wrapper = new HashMap<>();
+
+        wrapper.put(ServiceRequest.class.getName(),serviceRequest);
+
+        Set<Class<?>> allClasses = new HashSet<Class<?>>();
+
+        Marshaller marshaller = MarshallerFactory.getMarshaller(allClasses, MarshallingFormat.JSON, this.getClass().getClassLoader());
+
+        String payload = marshaller.marshall(wrapper);
+
+        System.out.println(payload);
+
+        ServiceRequest unmarshal = (ServiceRequest) marshaller.unmarshall(payload, Object.class);
+
+        Assert.assertEquals(unmarshal.getDataType(),serviceRequest.getDataType());
+    }
 }

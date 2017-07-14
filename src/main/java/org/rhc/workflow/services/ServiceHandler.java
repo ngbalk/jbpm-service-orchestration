@@ -7,6 +7,7 @@ import org.rhc.workflow.config.SVMServiceConfig;
 import org.rhc.workflow.errors.ServiceConfigurationException;
 import org.rhc.workflow.errors.ServiceException;
 import org.rhc.workflow.errors.WorkerException;
+import org.rhc.workflow.models.Copyable;
 import org.rhc.workflow.states.ServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,11 +37,6 @@ public class ServiceHandler {
             throw new IllegalStateException("Cannot execute service from state: " + context.getCurrentState().value());
         }
 
-        if(!SVMServiceRegistry.getInstance().isInitialized()){
-
-            throw new IllegalStateException("SVMServiceRegistry has not been properly initialized");
-        }
-
         ISVMService service;
 
         if(request.getWorkerName().startsWith(TEST_FLAG)){
@@ -52,6 +48,11 @@ public class ServiceHandler {
             service = new SVMServiceREST(config);
         }
         else{
+
+            if(!SVMServiceRegistry.getInstance().isInitialized()){
+
+                throw new IllegalStateException("SVMServiceRegistry has not been properly initialized");
+            }
 
             service = SVMServiceRegistry.getInstance().getService(request.getWorkerName());
         }
@@ -75,7 +76,30 @@ public class ServiceHandler {
 
         if(lastServiceResponse.getWorkerCallState().isCompleted()){
 
-            context.setData(lastServiceResponse.getData());
+            final Object newData = lastServiceResponse.getData();
+
+            Object data = context.getData();
+
+            LOG.debug("Data in ServiceResponse is {}", newData == null ? "null" : newData.toString());
+
+            LOG.debug("Current data in process is {}", data == null ? "null" : data.toString());
+
+            if((data != null) && (data instanceof Copyable) && (newData != null) && (newData instanceof Copyable)){
+
+                LOG.debug("Data is Copyable, copying new data into process data");
+
+                ((Copyable) data).copy(newData);
+
+                LOG.debug("Data after copy: {}", data.toString());
+            }
+            else{
+
+                LOG.debug("Data is not Copyable, replacing current process data with new data");
+
+                data = newData;
+            }
+
+            context.setData(data);
 
             context.setCurrentState(ServiceState.COMPLETED);
 

@@ -53,7 +53,7 @@ public class WireMockTests {
         executor.execute(request);
 
         verify(postRequestedFor(urlMatching("/wire-mock"))
-                .withRequestBody(equalToJson("{\"Data\":{\"incidentData\":{\"ID\":123,\"SupportActivityId\":\"abcdef\",\"OrganizationId\":\"xyz\",\"IncidentType\":\"Normal\"}},\"WorkerName\":\"wire-mock\",\"SignalInstanceInfo\":{\"ContainerId\":\"SVMContainer\",\"ProcessInstanceId\":1,\"SignalName\":\"A\"}}")));
+                .withRequestBody(equalToJson("{\"Data\":{\"incidentData\":{\"SupportActivityId\":\"abcdef\",\"OrganizationId\":\"xyz\",\"IncidentType\":\"Normal\"}},\"WorkerName\":\"wire-mock\",\"SignalInstanceInfo\":{\"ContainerId\":\"SVMContainer\",\"ProcessInstanceId\":1,\"SignalName\":\"A\"}}")));
 
     }
 }

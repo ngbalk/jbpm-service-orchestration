@@ -93,6 +93,8 @@ public class SVMServiceRegistry implements ISVMServiceRegistry{
 
             String strippedLocation = configLocation.replaceFirst("classpath:", "");
 
+            LOG.debug("Loading classpath resource for service configuration from {}", strippedLocation);
+
             locationUrl = this.getClass().getResource(strippedLocation);
 
             if (locationUrl == null) {
@@ -101,6 +103,8 @@ public class SVMServiceRegistry implements ISVMServiceRegistry{
             }
         }
         else {
+
+            LOG.debug("Loading service configuration directly from {}", configLocation);
 
             try {
 

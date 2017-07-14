@@ -1,6 +1,7 @@
 package org.rhc.workflow.models;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.drools.persistence.jpa.marshaller.VariableEntity;
 
@@ -16,15 +17,14 @@ import java.io.Serializable;
 @Entity
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class IncidentData extends VariableEntity implements Serializable{
+public class IncidentData extends VariableEntity implements Serializable, Copyable{
 
     static final long serialVersionUID = 156474883874702398L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "incident_data_id")
-    @XmlElement(name="ID")
-    @JsonProperty("ID")
+    @JsonIgnore
     public Long id;
 
     @Column(name = "support_activity_id", length = 128)
@@ -110,4 +110,20 @@ public class IncidentData extends VariableEntity implements Serializable{
 
     }
 
+    /**
+     * Copy relevant business data from this IncidentData to another IncidentData
+     * Will do nothing if other object is null
+     * Will do nothing if other object is not of type IncidentData
+     * @param other
+     */
+    @Override
+    public boolean copy(Object other) {
+        if(other == null || !(other instanceof IncidentData)){
+            return false;
+        }
+        this.setSupportActivityId(((IncidentData) other).getSupportActivityId());
+        this.setOrganizationId(((IncidentData) other).getOrganizationId());
+        this.setIncidentType(((IncidentData) other).getIncidentType());
+        return true;
+    }
 }

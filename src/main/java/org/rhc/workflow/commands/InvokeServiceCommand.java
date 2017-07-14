@@ -90,6 +90,7 @@ public class InvokeServiceCommand implements Command{
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(data)
+                        .addDataType(data.getClass().getName())
                         .addServiceName(serviceName)
                         .addContainerId(deploymentId)
                         .addProcessInstanceId(processInstanceId)

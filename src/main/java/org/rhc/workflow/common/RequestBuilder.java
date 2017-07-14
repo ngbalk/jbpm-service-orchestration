@@ -15,6 +15,8 @@ public class RequestBuilder {
 
     private String signalName;
 
+    private String dataType;
+
     public static RequestBuilder get(){
         return new RequestBuilder();
     }
@@ -22,6 +24,13 @@ public class RequestBuilder {
     public RequestBuilder addData(Object data){
 
         this.data = data;
+
+        return this;
+    }
+
+    public RequestBuilder addDataType(String dataType){
+
+        this.dataType = dataType;
 
         return this;
     }
@@ -54,12 +63,13 @@ public class RequestBuilder {
         return this;
     }
 
-
     public ServiceRequest buildRequest(){
 
         ServiceRequest request = new ServiceRequest();
 
         request.setData(data);
+
+        request.setDataType(dataType);
 
         request.setWorkerName(serviceName);
 

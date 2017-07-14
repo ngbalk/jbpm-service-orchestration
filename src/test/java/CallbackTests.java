@@ -109,6 +109,7 @@ public class CallbackTests {
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("generate-renewal-success")
+                        .addDataType(incidentData.getClass().getName())
                         .buildRequest();
 
         executor.execute(request);
