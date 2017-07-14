@@ -17,7 +17,7 @@ From Business Central, navigation to "Dependencies: Dependencies List" and add t
 <dependency>
   <groupId>org.rhc.workflow</groupId>
   <artifactId>bpm-services</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.9</version>
 </dependency>
 ```
 #### 3) Configure AsyncWorkItemHandler in Deployment Descriptor
@@ -64,7 +64,7 @@ import org.drools.core.process.core.datatype.impl.type.IntegerDataType;
         "RetryDelay" : new StringDataType(),
         "serviceName" : new StringDataType(),
         "callbackSignalName" : new StringDataType(),
-        "data" : new ObjectDataType("org.rhc.workflow.models.DataWrapper")
+        "data" : new ObjectDataType("")
        ],
     "results" : [
         "state" : new ObjectDataType("org.rhc.workflow.states.ServiceState")
@@ -77,10 +77,11 @@ import org.drools.core.process.core.datatype.impl.type.IntegerDataType;
     "parameters" : [
         "lastServiceResponse" : new ObjectDataType("org.rhc.workflow.common.ServiceResponse"),
         "state" : new ObjectDataType("org.rhc.workflow.states.ServiceState"),
+        "data" : new ObjectDataType("")
        ],
     "results" : [
         "state" : new ObjectDataType("org.rhc.workflow.states.ServiceState"),
-        "dataWrapper" : new ObjectDataType("org.rhc.workflow.models.DataWrapper")
+        "data" : new ObjectDataType("")
         ]
 ]
 ```
@@ -123,7 +124,7 @@ Data Inputs And Assignments
 | RetryDelay    |   String      | 5s, 10s, 15s |
 | serviceName   |   String      |    some-service-name    |
 | callbackSignalName   |   String      |    SignalA    |
-| data | org.rhc.workflow.models.DataWrapper | dataWrapper |
+| data | org.rhc.workflow.models.IncidentData | data |
 
 NOTE: For testing purposes, you can pass a url of your mock service directly to the WIH by prepending your serviceName with '$TEST:'
 For example, you could pass a url of your mock worker i.e. $TEST:http://some.ip.address:3000/mock-worker
@@ -151,14 +152,15 @@ Data Inputs And Assignments
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
 | lastServiceResponse  |   org.rhc.workflow.common.ServiceResponse      | lastServiceResponse |
-| state| org.rhc.workflow.states.ServiceState | state
+| state| org.rhc.workflow.states.ServiceState | state|
+| data | org.rhc.workflow.models.IncidentData | data |
 
 Data Outputs And Assignments
 
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
-| dataWrapper | org.rhc.workflow.models.DataWrapper | dataWrapper
-| state| org.rhc.workflow.states.ServiceState | state
+| data | org.rhc.workflow.models.IncidentData | data |
+| state| org.rhc.workflow.states.ServiceState | state|
 
 
 #### 9) Enabling JPA Persistence for Query-able Data
@@ -168,11 +170,12 @@ We will make changes to the following files to enable this at the project level:
 * persistence.xml
 * kie-deployment-descriptor.xml
 
-1) Add your serializable classes to persistence.xml.  In this case we are using MappedVariable to correlate a variable to a process instance id, so we have to include a few more classes.  (notice how DataWrapper extends VariableEntity)
+1) Add your serializable classes to persistence.xml.  In this case we are using MappedVariable to correlate a variable to a process instance id, so we have to include a few more classes.
 ```
 <class>org.drools.persistence.jpa.marshaller.MappedVariable</class>
 <class>org.drools.persistence.jpa.marshaller.VariableEntity</class>
-<class>org.rhc.workflow.models.DataWrapper</class>
+<class>org.rhc.workflow.models.IncidentData</class>
+<class>org.rhc.workflow.models.PaymentData</class>
 ```
 
 2) Add the following to persistence.xml
@@ -186,12 +189,25 @@ We will make changes to the following files to enable this at the project level:
 </marshalling-strategies>
 ```
 
-#### 10) Set DataWrapper in the process
-Our process takes a java.util.Map data as input, but because we are using JPA persistence, we have to convert this data to our DataWrapper.
-So we must have a step where we build this DataWrapper object from our data Map.  Do this in a simple script task at the beginning of the process.
-Make sure to import org.rhc.workflow.models.DataWrapper into your process.
+#### 10) How to create a new data model
+In order to use new domain specific data models in your process (like IncidentData, PaymentData, etc), you must crate a
+new model in this project, inside of org.rhc.workflow.models .   You can use previous models as examples to help you,
+but in general you should be aware of a few things:
 
-```java
-DataWrapper dw = new DataWrapper(data);
-kcontext.setVariable("dataWrapper",dw);
+1) Your model should extend VariableEntity, and implement Serializable, and Copyable
+
+2) Your model should have a unique serializable id field:
 ```
+static final long serialVersionUID = 156474883874702398L; // this should be unique to this class
+```
+
+3) Your model should implement a proper 'copy" method that correctly copies relevant business data from another object
+of the same type, but should ignore copying the id field.
+
+4) Your model should be properly annotated for serialization / deserialization and persistence.
+That includes: annotations contained in
+ * org.codehaus.jackson.annotate
+ * javax.persistence
+ * javax.xml.bind.annotation
+
+5) It is also generally considered best practice to override toString and equals
