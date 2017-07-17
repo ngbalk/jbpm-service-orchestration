@@ -1,11 +1,10 @@
 package org.rhc.workflow.models;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.drools.persistence.jpa.marshaller.VariableEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -17,15 +16,9 @@ import java.io.Serializable;
 @Entity
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class IncidentData extends VariableEntity implements Serializable, Copyable{
+public class IncidentData extends DomainData implements Serializable, Copyable{
 
     static final long serialVersionUID = 156474883874702398L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "incident_data_id")
-    @JsonIgnore
-    public Long id;
 
     @Column(name = "support_activity_id", length = 128)
     @XmlElement(name="SupportActivityId")
@@ -50,14 +43,6 @@ public class IncidentData extends VariableEntity implements Serializable, Copyab
 
     public IncidentData(){
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getSupportActivityId() {

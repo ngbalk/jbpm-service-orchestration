@@ -1,11 +1,10 @@
 package org.rhc.workflow.models;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.drools.persistence.jpa.marshaller.VariableEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -17,15 +16,9 @@ import java.io.Serializable;
 @Entity
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.NONE, getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class PaymentData extends VariableEntity implements Serializable, Copyable{
+public class PaymentData extends DomainData implements Serializable, Copyable{
 
     static final long serialVersionUID = 365784392199L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "payment_data_id")
-    @JsonIgnore
-    public Long id;
 
     @Column(name = "payment_id", length = 128)
     @XmlElement(name="PaymentId")
@@ -44,14 +37,6 @@ public class PaymentData extends VariableEntity implements Serializable, Copyabl
 
     public PaymentData() {
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getPaymentId() {

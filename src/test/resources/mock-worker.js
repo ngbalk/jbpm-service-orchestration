@@ -155,6 +155,7 @@ var server = http.createServer(function(req, res) {
             res.end('post received');
         }
         else {
+            console.log("404 NOT FOUND");
             res.writeHead(404, {'Content-Type': 'text/plain'});
             res.write("Couldn't find that worker!!\n");
             res.end();
