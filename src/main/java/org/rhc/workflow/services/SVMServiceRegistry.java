@@ -25,11 +25,13 @@ public class SVMServiceRegistry implements ISVMServiceRegistry{
 
     private Map<String, ISVMService> services;
 
-    protected static final String DEFAULT_SERVICES_CONFIG_VALUE = "classpath:/org.rhc.workflow.service.config.yml";
+    protected static final String DEFAULT_SERVICES_CONFIG_VALUE = "file:///opt/jboss-as/org.rhc.workflow.service.config.yml";
 
     protected static final String SERVICES_CONFIG_PROP_NAME = "org.rhc.workflow.service.config.location";
 
     private SVMServiceRegistry() {
+
+        LOG.debug("Starting initializing SVMServiceRegistry");
 
         services = new ConcurrentHashMap<>();
 

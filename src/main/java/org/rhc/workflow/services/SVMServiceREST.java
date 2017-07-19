@@ -22,6 +22,8 @@ public class SVMServiceREST implements ISVMService {
 
     public static final int HTTP_STATUS_OK = 200;
 
+    public static final int HTTP_STATUS_ACCEPTED = 202;
+
     private SVMServiceConfig config;
 
     private ResteasyWebTarget webTarget;
@@ -67,7 +69,7 @@ public class SVMServiceREST implements ISVMService {
                     throw new ServiceRESTException("Response returned null");
                 }
 
-                if(response.getStatus() == HTTP_STATUS_OK){
+                if(response.getStatus() == HTTP_STATUS_OK || response.getStatus() == HTTP_STATUS_ACCEPTED){
 
                     LOG.debug("Service call successfully invoked with code: {} ", response.getStatus());
 
