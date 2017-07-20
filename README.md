@@ -176,9 +176,14 @@ We will make changes to the following files to enable this at the project level:
 <class>org.drools.persistence.jpa.marshaller.VariableEntity</class>
 <class>org.rhc.workflow.models.IncidentData</class>
 <class>org.rhc.workflow.models.PaymentData</class>
+<class>org.rhc.workflow.models.DomainData</class>
 ```
 
-2) Add the following to persistence.xml
+2) Change Hibernate Dialect in persistence.xml
+```
+<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+```
+3) Add the following to kie-deployment-descriptor.xml
 ```
 <marshalling-strategies>
     <marshalling-strategy>

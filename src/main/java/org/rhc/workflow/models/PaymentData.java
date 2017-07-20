@@ -30,14 +30,23 @@ public class PaymentData extends DomainData implements Serializable, Copyable{
     @JsonProperty("RetryId")
     private String retryId;
 
+    @Column(name = "payment_worker_schedule_result", length = 128)
+    @XmlElement(name="PaymentWorkerScheduleResult")
+    @JsonProperty("PaymentWorkerScheduleResult")
+    private String paymentWorkerScheduleResult;
+
     public PaymentData(String paymentId, String retryId) {
         this.paymentId = paymentId;
         this.retryId = retryId;
     }
 
-    public PaymentData() {
-
+    public PaymentData(String paymentId, String retryId, String paymentWorkerScheduleResult) {
+        this.paymentId = paymentId;
+        this.retryId = retryId;
+        this.paymentWorkerScheduleResult = paymentWorkerScheduleResult;
     }
+
+    public PaymentData() {}
 
     public String getPaymentId() {
         return paymentId;
@@ -55,12 +64,21 @@ public class PaymentData extends DomainData implements Serializable, Copyable{
         this.retryId = retryId;
     }
 
+    public String getPaymentWorkerScheduleResult() {
+        return paymentWorkerScheduleResult;
+    }
+
+    public void setPaymentWorkerScheduleResult(String paymentWorkerScheduleResult) {
+        this.paymentWorkerScheduleResult = paymentWorkerScheduleResult;
+    }
+
     @Override
     public String toString() {
         return "PaymentData{" +
                 "id=" + id +
                 ", paymentId='" + paymentId + '\'' +
                 ", retryId='" + retryId + '\'' +
+                ", paymentWorkerScheduleResult='" + paymentWorkerScheduleResult + '\'' +
                 '}';
     }
 
@@ -73,8 +91,8 @@ public class PaymentData extends DomainData implements Serializable, Copyable{
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (paymentId != null ? !paymentId.equals(that.paymentId) : that.paymentId != null) return false;
+        if (paymentWorkerScheduleResult != null ? !paymentWorkerScheduleResult.equals(that.paymentWorkerScheduleResult) : that.paymentWorkerScheduleResult != null) return false;
         return retryId != null ? retryId.equals(that.retryId) : that.retryId == null;
-
     }
 
     @Override
@@ -84,6 +102,7 @@ public class PaymentData extends DomainData implements Serializable, Copyable{
         }
         this.setPaymentId(((PaymentData) other).getPaymentId());
         this.setRetryId(((PaymentData) other).getRetryId());
+        this.setPaymentWorkerScheduleResult(((PaymentData) other).getPaymentWorkerScheduleResult());
         return true;
     }
 }

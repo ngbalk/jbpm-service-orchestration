@@ -102,7 +102,7 @@ public class MarshallingTests {
         Set<Class<?>> allClasses = new HashSet<Class<?>>();
 
         allClasses.add(IncidentData.class);
-        
+
         Marshaller marshaller = MarshallerFactory.getMarshaller(allClasses, MarshallingFormat.JSON, this.getClass().getClassLoader());
 
         String payload = marshaller.marshall(wrapper);
