@@ -1,4 +1,4 @@
-# Service Orchestration for BPM
+# Service Orchestration for BPM V1
 Authors:
 * Nick Balkissoon
 * Alex Jurcenko
