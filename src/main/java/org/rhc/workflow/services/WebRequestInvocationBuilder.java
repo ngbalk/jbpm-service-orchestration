@@ -5,6 +5,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.core.Headers;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.Arrays;
 import java.util.Base64;
@@ -20,7 +22,7 @@ public class WebRequestInvocationBuilder {
     private String password;
     private String authToken;
     private int timeout;
-
+    private Entity entity;
 
     private WebRequestInvocationBuilder(final String url) {
 
@@ -63,13 +65,19 @@ public class WebRequestInvocationBuilder {
         return this;
     }
 
+    public WebRequestInvocationBuilder addEntity(Entity entity){
+
+        this.entity = entity;
+
+        return this;
+    }
 
     /**
      * Builds POST invocation
      *
      * @return
      */
-    public ResteasyWebTarget buildPost() {
+    public Invocation buildPost() {
 
         final ResteasyClientBuilder builder = new ResteasyClientBuilder();
 
@@ -95,9 +103,7 @@ public class WebRequestInvocationBuilder {
             headers.put("Authorization", Arrays.asList(new String[]{this.authToken}));
         }
 
-        target.request().headers(headers);
-
-        return target;
+        return target.request().headers(headers).buildPost(this.entity);
 
     }
 }

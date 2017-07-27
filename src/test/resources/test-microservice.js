@@ -7,7 +7,9 @@ var server = http.createServer(function(req, res) {
 
     if(req.method == 'POST'){
 
-        console.log("POST");
+        console.log("POST to " + url.parse(req.url).pathname);
+
+        console.log("Headers: " + JSON.stringify(req.headers));
 
         if (url.parse(req.url).pathname == '/generate-renewal-success') {
 
@@ -54,6 +56,8 @@ var server = http.createServer(function(req, res) {
             req.on('end', function(){
 
                 var request = JSON.parse(body);
+
+                console.log("Request: " + JSON.stringify(request));
 
                 var response = {};
 

@@ -7,10 +7,16 @@ This artifact extends the functionality of the out-of-the-box BPM workflow to as
 
  To use this in your BPM project, do the following:
 
-#### 1) Build the artifact
+#### 1) Build the artifact and run unit tests
 ```sh
 $ mvn clean install
 ```
+
+In order to run JUnit tests, you should run with JVM parameter.  This will tell our unit test where to load the service config from for local testing.
+```sh
+-Dorg.rhc.workflow.service.config.location=classpath:/org.rhc.workflow.service.config.yml
+```
+
 #### 2) Include the artifact as a dependency
 From Business Central, navigation to "Dependencies: Dependencies List" and add the group, artifact, version of this artifact as a dependency.  Or, add directly to the pom.xml.
 ```
@@ -216,3 +222,21 @@ That includes: annotations contained in
  * javax.xml.bind.annotation
 
 5) It is also generally considered best practice to override toString and equals
+
+#### 11) Test mode
+
+For testing purposes, you can pass a url of your mock service directly to the WIH by prepending your 'serviceName' with '$TEST:'
+For example, you could pass a url of your mock worker i.e. $TEST:http://some.ip.address:3000/mock-worker
+We also can pass a custom token in the optional 'authorization' parameter
+
+Data Inputs And Assignments
+
+| Name          | Data Type     | Source|
+| ------------- |:-------------:| -----:|
+| CommandClass  |   String      | org.rhc.workflow.commands.InvokeServiceCommand |
+| serviceName   |   String      |    $TEST:http://some.ip.address:3000/mock-worker    |
+| callbackSignalName   |   String      |    SignalA    |
+| data | org.rhc.workflow.models.IncidentData | data |
+| authorization | String | yourTokenHere |
+
+

@@ -45,9 +45,11 @@ public class ServiceConfigParser {
 
             Object obj = new Yaml().load(yamlResource);
 
-            Map<String, List<Map<String, Object>>> servicesConfig = (Map<String, List<Map<String, Object>>>) obj;
+            Map<String, Object> servicesConfig = (Map<String, Object>) obj;
 
-            List<Map<String, Object>> services = servicesConfig.get(SERVICES);
+            List<Map<String, Object>> services = (List<Map<String, Object>>) servicesConfig.get(SERVICES);
+
+            String token = (String) servicesConfig.get(TOKEN);
 
             for (Map<String, Object> serviceConfigMap : services) {
 
@@ -71,7 +73,10 @@ public class ServiceConfigParser {
 
                 String password = (String) serviceConfigMap.get(PASSWORD);
 
-                String token = (String) serviceConfigMap.get(TOKEN);
+                if(serviceConfigMap.get(TOKEN) != null){
+
+                    token = (String) serviceConfigMap.get(TOKEN);
+                }
 
                 Object timeoutObj = serviceConfigMap.get(TIMEOUT);
 

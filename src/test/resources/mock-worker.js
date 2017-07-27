@@ -5,6 +5,8 @@ var http = require('http'),
 var server = http.createServer(function(req, res) {
 
     if(req.method == 'POST'){
+	
+	console.log(JSON.stringify(req.headers));
 
         if (url.parse(req.url).pathname == '/worker-success') {
 

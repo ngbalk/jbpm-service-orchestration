@@ -77,7 +77,9 @@ public class SVMServiceRegistry implements ISVMServiceRegistry{
     @Override
     public void addService(SVMServiceConfig serviceConfig, boolean overwrite) {
 
-        this.services.put(serviceConfig.getName(), new SVMServiceREST(serviceConfig));
+        services.put(serviceConfig.getName(), new SVMServiceREST(serviceConfig));
+
+        initialized = true;
     }
 
     protected List<SVMServiceConfig> readServicesConfig(String configLocation, String defaultProperties) {

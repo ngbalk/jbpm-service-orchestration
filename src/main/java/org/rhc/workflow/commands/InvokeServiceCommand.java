@@ -18,6 +18,9 @@ import org.rhc.workflow.common.ProcessStateCommandFactory;
 import org.rhc.workflow.common.RequestBuilder;
 import org.rhc.workflow.common.ServiceRequest;
 import org.rhc.workflow.common.StateContext;
+import org.rhc.workflow.config.SVMServiceConfig;
+import org.rhc.workflow.models.DomainData;
+import org.rhc.workflow.services.SVMServiceRegistry;
 import org.rhc.workflow.services.ServiceHandler;
 import org.rhc.workflow.states.ServiceState;
 import org.slf4j.Logger;
@@ -46,6 +49,10 @@ public class InvokeServiceCommand implements Command{
 
     private static final String BUSINESS_KEY = "businessKey";
 
+    private static final String TEST_FLAG = "$TEST:";
+
+    private static final String AUTHORIZATION = "authorization";
+
     @Override
     // TODO Method is too big. Split into multiple methods
     public ExecutionResults execute(CommandContext ctx) throws Exception {
@@ -64,11 +71,22 @@ public class InvokeServiceCommand implements Command{
 
         Object data = workItem.getParameter(DATA);
 
-        if(data == null){
+        if(serviceName.startsWith(TEST_FLAG)){
 
-            data = new Object();
+            LOG.warn("Calling service in TEST mode, calling to {}",serviceName);
 
-            LOG.warn("Domain data object is null, this could cause problems");
+            String authorization = null;
+
+            if(workItem.getParameter(AUTHORIZATION) != null){
+
+                authorization = (String) workItem.getParameter(AUTHORIZATION);
+
+                LOG.warn("Using Authorization override in TEST mode, using token {}",authorization);
+            }
+
+            SVMServiceConfig config = new SVMServiceConfig("test-worker", serviceName.substring(TEST_FLAG.length()), null, null, authorization, 10000, 0);
+
+            SVMServiceRegistry.getInstance().addService(config, true);
         }
 
         RuntimeManager runtimeManager = RuntimeManagerRegistry.get().getManager(deploymentId);
@@ -160,6 +178,13 @@ public class InvokeServiceCommand implements Command{
         if(signalName == null || !(signalName instanceof String)){
 
             throw new IllegalArgumentException("Parameter 'callbackSignalName' in AsyncWorkItemHandler is null or is not of type String");
+        }
+
+        Object data = workItem.getParameter(DATA);
+
+        if(data == null || !(data instanceof DomainData)){
+
+            throw new IllegalArgumentException("Parameter 'data' in AsyncWorkItemHandler is null or is not of type org.rhc.workflow.models.DomainData");
         }
     }
 }

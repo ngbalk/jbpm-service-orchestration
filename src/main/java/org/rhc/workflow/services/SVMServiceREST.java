@@ -1,6 +1,5 @@
 package org.rhc.workflow.services;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.rhc.workflow.common.ServiceRequest;
 import org.rhc.workflow.config.SVMServiceConfig;
 import org.rhc.workflow.errors.ServiceConfigurationException;
@@ -9,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -26,7 +26,7 @@ public class SVMServiceREST implements ISVMService {
 
     private SVMServiceConfig config;
 
-    private ResteasyWebTarget webTarget;
+    private Invocation invocation;
 
     public SVMServiceREST(SVMServiceConfig config) throws ServiceConfigurationException{
 
@@ -38,10 +38,6 @@ public class SVMServiceREST implements ISVMService {
 
             throw new ServiceConfigurationException("Service configuration url is null");
         }
-        this.webTarget = WebRequestInvocationBuilder.create(config.getUrl())
-                .setTimeout(config.getTimeout())
-                .addAuthToken(config.getToken())
-                .addUsernameAndPassword(config.getUsername(),config.getPassword()).buildPost();
     }
 
     public void execute(ServiceRequest request) throws ServiceConfigurationException, ServiceRESTException{
@@ -49,6 +45,13 @@ public class SVMServiceREST implements ISVMService {
         validateRequestParameters(request);
 
         Entity entity = Entity.entity(request, MediaType.APPLICATION_JSON);
+
+        this.invocation = WebRequestInvocationBuilder.create(config.getUrl())
+                .setTimeout(config.getTimeout())
+                .addAuthToken(config.getToken())
+                .addUsernameAndPassword(config.getUsername(),config.getPassword())
+                .addEntity(entity)
+                .buildPost();
 
         int invokeTimes = this.config.getRetryTimes() + 1;
 
@@ -60,7 +63,7 @@ public class SVMServiceREST implements ISVMService {
 
                 LOG.debug("Invoking service call");
 
-                response = webTarget.request().post(entity);
+                response = invocation.invoke();
 
                 if(response == null){
 
