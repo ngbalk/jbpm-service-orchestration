@@ -2,12 +2,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.rhc.workflow.common.RequestBuilder;
-import org.rhc.workflow.common.ServiceRequest;
-import org.rhc.workflow.common.StateContext;
-import org.rhc.workflow.models.IncidentData;
-import org.rhc.workflow.services.ServiceHandler;
-import org.rhc.workflow.states.ServiceState;
+import org.bpm.workflow.common.RequestBuilder;
+import org.bpm.workflow.common.ServiceRequest;
+import org.bpm.workflow.common.StateContext;
+import org.bpm.workflow.models.IncidentData;
+import org.bpm.workflow.services.ServiceHandler;
+import org.bpm.workflow.states.ServiceState;
 
 import java.util.HashMap;
 
@@ -54,7 +54,7 @@ public class CallbackTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(data)
-                        .addContainerId("SVMContainer")
+                        .addContainerId("MyContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("generate-renewal-success")
@@ -79,7 +79,7 @@ public class CallbackTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(data)
-                        .addContainerId("SVMContainer")
+                        .addContainerId("MyContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("generate-renewal-error")
@@ -105,7 +105,7 @@ public class CallbackTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(data)
-                        .addContainerId("SVMContainer")
+                        .addContainerId("MyContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("generate-renewal-success")

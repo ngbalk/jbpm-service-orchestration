@@ -4,23 +4,21 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.api.executor.CommandContext;
 import org.mockito.Mockito;
-import org.rhc.workflow.commands.InvokeServiceCommand;
-import org.rhc.workflow.common.RequestBuilder;
-import org.rhc.workflow.common.ServiceRequest;
-import org.rhc.workflow.common.ServiceResponse;
-import org.rhc.workflow.common.StateContext;
-import org.rhc.workflow.config.SVMServiceConfig;
-import org.rhc.workflow.errors.ServiceException;
-import org.rhc.workflow.errors.ServiceRESTException;
-import org.rhc.workflow.errors.WorkerError;
-import org.rhc.workflow.errors.WorkerException;
-import org.rhc.workflow.services.SVMServiceRegistry;
-import org.rhc.workflow.services.ServiceHandler;
-import org.rhc.workflow.states.ServiceState;
-import org.rhc.workflow.states.WorkerCallState;
-import org.rhc.workflow.workitems.CompleteServiceWorkItemHandler;
+import org.bpm.workflow.common.RequestBuilder;
+import org.bpm.workflow.common.ServiceRequest;
+import org.bpm.workflow.common.ServiceResponse;
+import org.bpm.workflow.common.StateContext;
+import org.bpm.workflow.config.ServiceConfig;
+import org.bpm.workflow.errors.ServiceException;
+import org.bpm.workflow.errors.ServiceRESTException;
+import org.bpm.workflow.errors.WorkerError;
+import org.bpm.workflow.errors.WorkerException;
+import org.bpm.workflow.services.ServiceRegistry;
+import org.bpm.workflow.services.ServiceHandler;
+import org.bpm.workflow.states.ServiceState;
+import org.bpm.workflow.states.WorkerCallState;
+import org.bpm.workflow.workitems.CompleteServiceWorkItemHandler;
 
 import javax.ws.rs.ProcessingException;
 import java.util.Arrays;
@@ -61,7 +59,7 @@ public class RenewalsTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(new HashMap<String, Object>())
-                        .addContainerId("SVMContainer")
+                        .addContainerId("MyContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("calculate-price")
@@ -210,7 +208,7 @@ public class RenewalsTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(new HashMap<String, Object>())
-                        .addContainerId("SVMContainer")
+                        .addContainerId("MyContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("timeout")
@@ -237,7 +235,7 @@ public class RenewalsTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(new HashMap<String, Object>())
-                        .addContainerId("SVMContainer")
+                        .addContainerId("MyContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("invalid")
@@ -263,7 +261,7 @@ public class RenewalsTests {
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(new HashMap<String, Object>())
-                        .addContainerId("SVMContainer")
+                        .addContainerId("MyContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("try-again")
@@ -315,7 +313,7 @@ public class RenewalsTests {
         data.put("uID","12345");
 
 
-        SVMServiceConfig config = new SVMServiceConfig("test-worker"
+        ServiceConfig config = new ServiceConfig("test-worker"
                 ,"http://localhost:3000/hello-microservice"
                 ,null
                 ,null
@@ -323,12 +321,12 @@ public class RenewalsTests {
                 ,10000,
                 3);
 
-        SVMServiceRegistry.getInstance().addService(config, true);
+        ServiceRegistry.getInstance().addService(config, true);
 
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(data)
-                        .addContainerId("SVMContainer")
+                        .addContainerId("MyContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("$TEST:http://localhost:3000/hello-microservice")
@@ -350,7 +348,7 @@ public class RenewalsTests {
         HashMap<String, Object> data = new HashMap<String, Object>();
         data.put("uID","12345");
 
-        SVMServiceConfig config = new SVMServiceConfig("test-worker"
+        ServiceConfig config = new ServiceConfig("test-worker"
                         ,"http://localhost:3000/invalid-service"
                         ,null
                         ,null
@@ -358,12 +356,12 @@ public class RenewalsTests {
                         ,10000,
                         3);
 
-        SVMServiceRegistry.getInstance().addService(config, true);
+        ServiceRegistry.getInstance().addService(config, true);
 
         ServiceRequest request =
                 RequestBuilder.get()
                         .addData(data)
-                        .addContainerId("SVMContainer")
+                        .addContainerId("MyContainer")
                         .addProcessInstanceId(1L)
                         .addSignalName("A")
                         .addServiceName("$TEST:")

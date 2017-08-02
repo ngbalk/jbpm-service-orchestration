@@ -1,7 +1,7 @@
 import org.junit.Assert;
 import org.junit.Test;
-import org.rhc.workflow.models.IncidentData;
-import org.rhc.workflow.models.PaymentData;
+import org.bpm.workflow.models.IncidentData;
+import org.bpm.workflow.models.PaymentData;
 
 /**
  * Created by nbalkiss on 7/13/17.

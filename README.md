@@ -1,7 +1,6 @@
 # Service Orchestration for BPM
 Authors:
 * Nick Balkissoon
-* Alex Jurcenko
 
 This artifact extends the functionality of the out-of-the-box BPM workflow to asynchronously call external services with smart retry logic, and supporting callbacks.
 
@@ -14,14 +13,14 @@ $ mvn clean install
 
 In order to run JUnit tests, you should run with JVM parameter.  This will tell our unit test where to load the service config from for local testing.
 ```sh
--Dorg.rhc.workflow.service.config.location=classpath:/org.rhc.workflow.service.config.yml
+-Dorg.bpm.workflow.service.config.location=classpath:/org.bpm.workflow.service.config.yml
 ```
 
 #### 2) Include the artifact as a dependency
 From Business Central, navigation to "Dependencies: Dependencies List" and add the group, artifact, version of this artifact as a dependency.  Or, add directly to the pom.xml.
 ```
 <dependency>
-  <groupId>org.rhc.workflow</groupId>
+  <groupId>org.bpm.workflow</groupId>
   <artifactId>bpm-services</artifactId>
   <version>1.0.9</version>
 </dependency>
@@ -35,14 +34,14 @@ Navigate to "Deployment Descriptor Editor" and add the following entry under "Wo
 |     Value      |  Value   |
 | ------------- |:-------------|
 |AsyncService    |   new org.jbpm.executor.impl.wih.AsyncWorkItemHandler(org.jbpm.executor.ExecutorServiceFactory.newExecutorService())|
-|CompleteService |   new org.rhc.workflow.workitems.CompleteServiceWorkItemHandler()                                                   |
+|CompleteService |   new org.bpm.workflow.workitems.CompleteServiceWorkItemHandler()                                                   |
 
 
 Or add directly to kie-deployment-descriptor.xml
 ```
 <work-item-handler>
     <resolver>mvel</resolver>
-    <identifier>new org.rhc.workflow.workitems.CompleteServiceWorkItemHandler()</identifier>
+    <identifier>new org.bpm.workflow.workitems.CompleteServiceWorkItemHandler()</identifier>
     <parameters/>
     <name>CompleteService</name>
 </work-item-handler>
@@ -73,7 +72,7 @@ import org.drools.core.process.core.datatype.impl.type.IntegerDataType;
         "data" : new ObjectDataType("")
        ],
     "results" : [
-        "state" : new ObjectDataType("org.rhc.workflow.states.ServiceState")
+        "state" : new ObjectDataType("org.bpm.workflow.states.ServiceState")
         ]
 ],
 [
@@ -81,12 +80,12 @@ import org.drools.core.process.core.datatype.impl.type.IntegerDataType;
     "displayName" : "Complete Service",
     "icon" : "defaultservicenodeicon.png",
     "parameters" : [
-        "lastServiceResponse" : new ObjectDataType("org.rhc.workflow.common.ServiceResponse"),
-        "state" : new ObjectDataType("org.rhc.workflow.states.ServiceState"),
+        "lastServiceResponse" : new ObjectDataType("org.bpm.workflow.common.ServiceResponse"),
+        "state" : new ObjectDataType("org.bpm.workflow.states.ServiceState"),
         "data" : new ObjectDataType("")
        ],
     "results" : [
-        "state" : new ObjectDataType("org.rhc.workflow.states.ServiceState"),
+        "state" : new ObjectDataType("org.bpm.workflow.states.ServiceState"),
         "data" : new ObjectDataType("")
         ]
 ]
@@ -114,10 +113,10 @@ services:
     username: johndoe
     password: unicorns1!
 ```
-By default, SVMServiceRegistry will look for a file named "org.rhc.workflow.service.config.yml" on the classpath.
-You can configure SVMServiceRegistry to look anywhere by setting the property: org.rhc.workflow.service.config.location
+By default, ServiceRegistry will look for a file named "org.bpm.workflow.service.config.yml" on the classpath.
+You can configure ServiceRegistry to look anywhere by setting the property: org.bpm.workflow.service.config.location
 ```sh
-$ bash standalone.sh -Dorg.rhc.workflow.service.config.location=file:///Users/johndoe/files/services_config.yml
+$ bash standalone.sh -Dorg.bpm.workflow.service.config.location=file:///Users/johndoe/files/services_config.yml
 ```
 #### 6) Add your AsyncWorkItemHandler to your workflow
 
@@ -125,12 +124,12 @@ Data Inputs And Assignments
 
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
-| CommandClass  |   String      | org.rhc.workflow.commands.InvokeServiceCommand |
+| CommandClass  |   String      | org.bpm.workflow.commands.InvokeServiceCommand |
 | Retries       |   Integer     | 3 |
 | RetryDelay    |   String      | 5s, 10s, 15s |
 | serviceName   |   String      |    some-service-name    |
 | callbackSignalName   |   String      |    SignalA    |
-| data | org.rhc.workflow.models.IncidentData | data |
+| data | org.bpm.workflow.models.IncidentData | data |
 
 NOTE: For testing purposes, you can pass a url of your mock service directly to the WIH by prepending your serviceName with '$TEST:'
 For example, you could pass a url of your mock worker i.e. $TEST:http://some.ip.address:3000/mock-worker
@@ -139,7 +138,7 @@ Data Outputs And Assignments
 
 | Name          | Data Type     | Target|
 | ------------- |:-------------:| -----:|
-| state  |   org.rhc.workflow.states.ServiceState      | state |
+| state  |   org.bpm.workflow.states.ServiceState      | state |
 
 #### 7) Add your signal
 Your signal should follow after the AsyncWorkItemHandler with the following config:
@@ -148,7 +147,7 @@ Data Outputs And Assignments
 
 | Name          | Data Type     | Target|
 | ------------- |:-------------:| -----:|
-| lastServiceResponse  |   org.rhc.workflow.common.ServiceResponse      | lastServiceResponse |
+| lastServiceResponse  |   org.bpm.workflow.common.ServiceResponse      | lastServiceResponse |
 
 #### 8) Add your CompleteServiceWorkItemHandler
 This WorkItemHandler takes the response from Signal and applies the result to the state of the process, or handles failures
@@ -157,16 +156,16 @@ Data Inputs And Assignments
 
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
-| lastServiceResponse  |   org.rhc.workflow.common.ServiceResponse      | lastServiceResponse |
-| state| org.rhc.workflow.states.ServiceState | state|
-| data | org.rhc.workflow.models.IncidentData | data |
+| lastServiceResponse  |   org.bpm.workflow.common.ServiceResponse      | lastServiceResponse |
+| state| org.bpm.workflow.states.ServiceState | state|
+| data | org.bpm.workflow.models.IncidentData | data |
 
 Data Outputs And Assignments
 
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
-| data | org.rhc.workflow.models.IncidentData | data |
-| state| org.rhc.workflow.states.ServiceState | state|
+| data | org.bpm.workflow.models.IncidentData | data |
+| state| org.bpm.workflow.states.ServiceState | state|
 
 
 #### 9) Enabling JPA Persistence for Query-able Data
@@ -180,9 +179,9 @@ We will make changes to the following files to enable this at the project level:
 ```
 <class>org.drools.persistence.jpa.marshaller.MappedVariable</class>
 <class>org.drools.persistence.jpa.marshaller.VariableEntity</class>
-<class>org.rhc.workflow.models.IncidentData</class>
-<class>org.rhc.workflow.models.PaymentData</class>
-<class>org.rhc.workflow.models.DomainData</class>
+<class>org.bpm.workflow.models.IncidentData</class>
+<class>org.bpm.workflow.models.PaymentData</class>
+<class>org.bpm.workflow.models.DomainData</class>
 ```
 
 2) Change Hibernate Dialect in persistence.xml
@@ -194,7 +193,7 @@ We will make changes to the following files to enable this at the project level:
 <marshalling-strategies>
     <marshalling-strategy>
         <resolver>mvel</resolver>
-        <identifier>new org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy("svm:hello-bpm:1.0.40", classLoader)</identifier>
+        <identifier>new org.drools.persistence.jpa.marshaller.JPAPlaceholderResolverStrategy("bpm:hello-bpm:1.0.40", classLoader)</identifier>
         <parameters/>
     </marshalling-strategy>
 </marshalling-strategies>
@@ -202,7 +201,7 @@ We will make changes to the following files to enable this at the project level:
 
 #### 10) How to create a new data model
 In order to use new domain specific data models in your process (like IncidentData, PaymentData, etc), you must crate a
-new model in this project, inside of org.rhc.workflow.models .   You can use previous models as examples to help you,
+new model in this project, inside of org.bpm.workflow.models .   You can use previous models as examples to help you,
 but in general you should be aware of a few things:
 
 1) Your model should extend VariableEntity, and implement Serializable, and Copyable
@@ -233,10 +232,10 @@ Data Inputs And Assignments
 
 | Name          | Data Type     | Source|
 | ------------- |:-------------:| -----:|
-| CommandClass  |   String      | org.rhc.workflow.commands.InvokeServiceCommand |
+| CommandClass  |   String      | org.bpm.workflow.commands.InvokeServiceCommand |
 | serviceName   |   String      |    $TEST:http://some.ip.address:3000/mock-worker    |
 | callbackSignalName   |   String      |    SignalA    |
-| data | org.rhc.workflow.models.IncidentData | data |
+| data | org.bpm.workflow.models.IncidentData | data |
 | authorization | String | yourTokenHere |
 
 

@@ -34,7 +34,7 @@ var server = http.createServer(function(req, res) {
                 response.WorkerCallState = {};
                 response.WorkerCallState.Completed = true;
 
-                var payload = JSON.stringify(marshallerWrapper(response,"org.rhc.workflow.common.ServiceResponse"));
+                var payload = JSON.stringify(marshallerWrapper(response,"org.bpm.workflow.common.ServiceResponse"));
 
                 callback(request.SignalInstanceInfo.ContainerId,request.SignalInstanceInfo.ProcessInstanceId,request.SignalInstanceInfo.SignalName,payload);
             });
@@ -71,7 +71,7 @@ var server = http.createServer(function(req, res) {
                 response.WorkerCallState = {};
                 response.WorkerCallState.Completed = true;
 
-                var payload = JSON.stringify(marshallerWrapper(response,"org.rhc.workflow.common.ServiceResponse"));
+                var payload = JSON.stringify(marshallerWrapper(response,"org.bpm.workflow.common.ServiceResponse"));
 
                 callback(request.SignalInstanceInfo.ContainerId,request.SignalInstanceInfo.ProcessInstanceId,request.SignalInstanceInfo.SignalName,payload);
             });
@@ -108,7 +108,7 @@ var server = http.createServer(function(req, res) {
                 response.WorkerCallState = {};
                 response.WorkerCallState.Completed = true;
 
-                var payload = JSON.stringify(marshallerWrapper(response,"org.rhc.workflow.common.ServiceResponse"));
+                var payload = JSON.stringify(marshallerWrapper(response,"org.bpm.workflow.common.ServiceResponse"));
 
                 callback(request.SignalInstanceInfo.ContainerId,request.SignalInstanceInfo.ProcessInstanceId,request.SignalInstanceInfo.SignalName,payload);
             });
@@ -190,7 +190,7 @@ function callback(containerId,processInstanceId,signalName,payload){
 
 function callbackKIEDev(containerId,processInstanceId,signalName,payload){
     var postOptions = {
-      host: "kie-dev.svmintranet.com",
+      host: "kie-dev.mockhost.com",
       port: "443",
       path: "/kie-server/services/rest/server/containers/"+containerId+"/processes/instances/"+processInstanceId+"/signal/"+signalName,
       method: 'POST',

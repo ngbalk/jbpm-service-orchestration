@@ -3,15 +3,15 @@ import org.junit.Test;
 import org.kie.server.api.marshalling.Marshaller;
 import org.kie.server.api.marshalling.MarshallerFactory;
 import org.kie.server.api.marshalling.MarshallingFormat;
-import org.rhc.workflow.common.RequestBuilder;
-import org.rhc.workflow.common.ServiceRequest;
-import org.rhc.workflow.common.ServiceResponse;
-import org.rhc.workflow.common.SignalInstanceInfo;
-import org.rhc.workflow.errors.Severity;
-import org.rhc.workflow.errors.WorkerError;
-import org.rhc.workflow.models.IncidentData;
-import org.rhc.workflow.models.PaymentData;
-import org.rhc.workflow.states.WorkerCallState;
+import org.bpm.workflow.common.RequestBuilder;
+import org.bpm.workflow.common.ServiceRequest;
+import org.bpm.workflow.common.ServiceResponse;
+import org.bpm.workflow.common.SignalInstanceInfo;
+import org.bpm.workflow.errors.Severity;
+import org.bpm.workflow.errors.WorkerError;
+import org.bpm.workflow.models.IncidentData;
+import org.bpm.workflow.models.PaymentData;
+import org.bpm.workflow.states.WorkerCallState;
 
 import java.util.*;
 
@@ -22,7 +22,7 @@ public class MarshallingTests {
 
     @Test
     public void testUnmarshal(){
-        String data = "{\"org.rhc.workflow.common.ServiceResponse\":{\"Data\":{\"uID\":\"12345\",\"pId\":\"abcdef\"},\"WorkerName\":\"my-worker\",\"SignalInstanceInfo\":{\"ContainerId\":\"123\",\"ProcessInstanceId\":1,\"SignalName\":\"abc\"},\"Message\":\"FAIL\",\"WorkerCallState\":{\"Completed\":true,\"Errors\":[{\"ErrorID\":null,\"Severity\":\"Critical\",\"Description\":\"this is an error\"}]}}}\n";
+        String data = "{\"ServiceResponse\":{\"Data\":{\"uID\":\"12345\",\"pId\":\"abcdef\"},\"WorkerName\":\"my-worker\",\"SignalInstanceInfo\":{\"ContainerId\":\"123\",\"ProcessInstanceId\":1,\"SignalName\":\"abc\"},\"Message\":\"FAIL\",\"WorkerCallState\":{\"Completed\":true,\"Errors\":[{\"ErrorID\":null,\"Severity\":\"Critical\",\"Description\":\"this is an error\"}]}}}\n";
 
         Set<Class<?>> allClasses = new HashSet<Class<?>>();
         allClasses.add(ServiceResponse.class);
@@ -41,7 +41,7 @@ public class MarshallingTests {
     @Test
     public void testUnmarshalIncidentDataObject(){
 
-        String data = "{\"org.rhc.workflow.common.ServiceResponse\":{\"Data\":{\"org.rhc.workflow.models.IncidentData\":{\"ID\":123,\"SupportActivityId\":\"abcdef\",\"OrganizationId\":\"xyz\",\"IncidentType\":\"Normal\"}},\"SignalInstanceInfo\":{\"ContainerId\":\"SVMContainer\",\"ProcessInstanceId\":1,\"SignalName\":\"A\"},\"Message\":\"SUCCESS\",\"WorkerName\":\"generate-renewal-success\",\"WorkerCallState\":{\"Completed\":true}}}";
+        String data = "{\"ServiceResponse\":{\"Data\":{\"IncidentData\":{\"ID\":123,\"SupportActivityId\":\"abcdef\",\"OrganizationId\":\"xyz\",\"IncidentType\":\"Normal\"}},\"SignalInstanceInfo\":{\"ContainerId\":\"MyContainer\",\"ProcessInstanceId\":1,\"SignalName\":\"A\"},\"Message\":\"SUCCESS\",\"WorkerName\":\"generate-renewal-success\",\"WorkerCallState\":{\"Completed\":true}}}";
 
         Marshaller marshaller = MarshallerFactory.getMarshaller(null, MarshallingFormat.JSON, this.getClass().getClassLoader());
         Object unmarshal = marshaller.unmarshall(data, Object.class);

@@ -1,0 +1,31 @@
+token: blahblahsomeTokenblahblah
+services:
+  - name: calculate-price
+    url: http://localhost:3000/hello-microservice
+    timeout: 2000
+
+  - name: timeout
+    url: http://localhost:3000/timeout
+    timeout: 2000
+    retries: 3
+
+  - name: invalid
+    url: http://localhost:3000/invalid
+    timeout: 2000
+    retries: 3
+
+  - name: try-again
+    url: http://localhost:3000/try-again
+    timeout: 2000
+    retries: 3
+
+  - name: generate-renewal-success
+    url: http://localhost:3000/generate-renewal-success
+    timeout: 2000
+
+  - name: generate-renewal-error
+    url: http://localhost:3000/generate-renewal-error
+
+  - name: wire-mock
+    url: http://localhost:8089/wire-mock
+

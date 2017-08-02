@@ -1,11 +1,11 @@
 import org.junit.Assert;
 import org.junit.Test;
-import org.rhc.workflow.common.ServiceResponse;
-import org.rhc.workflow.common.StateContext;
-import org.rhc.workflow.models.IncidentData;
-import org.rhc.workflow.services.ServiceHandler;
-import org.rhc.workflow.states.ServiceState;
-import org.rhc.workflow.states.WorkerCallState;
+import org.bpm.workflow.common.ServiceResponse;
+import org.bpm.workflow.common.StateContext;
+import org.bpm.workflow.models.IncidentData;
+import org.bpm.workflow.services.ServiceHandler;
+import org.bpm.workflow.states.ServiceState;
+import org.bpm.workflow.states.WorkerCallState;
 
 /**
  * Created by nbalkiss on 7/13/17.
